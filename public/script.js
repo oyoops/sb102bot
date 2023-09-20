@@ -21,12 +21,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         });
 
         const data = await response.json();
-        console.log(data);
-
-        // Check if the data contains all the necessary fields
-        if (!data || !data.height || !data.latitude || !data.longitude) {
-            throw new Error("Incomplete data received from the server.");
-        }
 
         const {
             height,
@@ -44,37 +38,48 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const streetViewURL = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
 
         let resultContent = (address === "- ") ? `
-            <u><b>${buildingName}</b></u><br><br>
-            By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,
-            which is as tall as this building at ${latitude}, ${longitude}:<br><br>
-            <a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${latitude},${longitude}"></a><br>
-            See it on <a href="${googleMapsURL}" target="_blank">Google Maps</a><br><br>
-            Your site is ${distance} miles away, so it qualifies.<br>${density} | ${city} | ${county}<br>
+            <div class="fade-in-line"><u><b>${buildingName}</b></u></div>
+            <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
+            <div class="fade-in-line">which is as tall as this building at ${latitude}, ${longitude}:</div>
+            <div class="fade-in-line"><a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${latitude},${longitude}"></a></div>
+            <div class="fade-in-line">See it on <a href="${googleMapsURL}" target="_blank">Google Maps</a></div>
+            <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
+            <div class="fade-in-line">${density} | ${city} | ${county}</div>
         ` : `
-            By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,
-            which is as tall as this building at ${address}:<br><br>
-            <a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${address}"></a><br>
-            See it on <a href="${googleMapsURL}" target="_blank">Google Maps</a><br><br>
-            Your site is ${distance} miles away, so it qualifies.<br>${density} | ${city} | ${county}<br>
+            <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
+            <div class="fade-in-line">which is as tall as this building at ${address}:</div>
+            <div class="fade-in-line"><a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${address}"></a></div>
+            <div class="fade-in-line">See it on <a href="${googleMapsURL}" target="_blank">Google Maps</a></div>
+            <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
+            <div class="fade-in-line">${density} | ${city} | ${county}</div>
         `;
-
+        
         if (!density || density <= 0) {
-            resultContent += `<i>Sorry, I don't know the maximum residential density in this municipality. <br>On the bright side, I've automatically added it to my list of requested cities/counties to add in the near future.<br><br>Try again some other day!<br><br>${city} ${county}<br>`;
+            resultContent += `
+                <div class="fade-in-line"><i>Sorry, I don't know the maximum residential density in this municipality.</i></div>
+                <div class="fade-in-line"><i>On the bright side, I've automatically added it to my list of requested cities/counties to add in the near future.</i></div>
+                <div class="fade-in-line"><i>Try again some other day!</i></div>
+                <div class="fade-in-line">${city} ${county}</div>
+            `;
         } else {
-            resultContent += `The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location could match that.<br><br>`;
+            resultContent += `
+                <div class="fade-in-line">The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location could match that.</div>
+            `;
         }
-
+        
         resultDiv.innerHTML = resultContent;
+    
 
-        // Show the result div content with a fade-in effect
-        resultDiv.style.opacity = 1;
+        // Fade in each line with a delay
+        const lines = resultDiv.querySelectorAll('.fade-in-line');
+        lines.forEach((line, index) => {
+            setTimeout(() => {
+                line.style.opacity = 1;
+            }, index * 500);  // 500ms delay for each line
+        });
 
     } catch (error) {
         console.error(error);
         resultDiv.innerHTML = "Sorry, an error occurred. Please try again later.";
-        resultDiv.style.opacity = 1;
-    } finally {
-        // Hide the loading indicator
-        loadingDiv.style.display = 'none';
     }
 });
