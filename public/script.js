@@ -73,7 +73,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
-
+        resultDiv.style.opacity = '1';
+        
         let delay = 0;
         const fadeInLines = document.querySelectorAll('.fade-in-line');
         fadeInLines.forEach(line => {
