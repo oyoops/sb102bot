@@ -22,7 +22,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         const data = await response.json();
         console.log(data);
-
+        
         const {
             height,
             latitude,
