@@ -39,7 +39,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const streetViewURL = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
 
         let resultContent = (address === "- ") ? `
-            <div class="fade-in-line"><u><b>${buildingName}</b></u></div>
+            <div class="fade-in-line"><u><b><br></b></u></div>
             <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
             <div class="fade-in-line">which is as tall as this building at ${latitude}, ${longitude}:</div>
             <div class="fade-in-line"><a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${latitude},${longitude}"></a></div>
