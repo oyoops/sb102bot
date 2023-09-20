@@ -83,3 +83,15 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = "Sorry, an error occurred. Please try again later.";
     }
 });
+
+
+
+// Fade in the input box on page load
+//   (add a class to the input after the page loads to trigger the transition)
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const input = document.getElementById('addressInput');
+        input.style.opacity = 1;
+        input.style.transform = 'translateY(0)';
+    }, 100); // slight delay to ensure styles are applied after load
+});
