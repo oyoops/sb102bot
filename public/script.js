@@ -73,10 +73,17 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
-
-        // Set the opacity of the result div to 1
-        resultDiv.style.opacity = '1';
         
+        // Fade in the result div
+        let delay = 0;
+        const fadeInLines = document.querySelectorAll('.fade-in-line');
+        fadeInLines.forEach(line => {
+            setTimeout(() => {
+                line.style.opacity = '1';
+            }, delay);
+            delay += 500; // 0.5 seconds delay for each line
+        });
+
         // Hide loading and show "Try Again" button
         loadingDiv.style.display = 'none';
         tryAgainButton.style.display = 'block';
