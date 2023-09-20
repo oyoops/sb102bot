@@ -56,18 +56,18 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         ` : `
             <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
             <div class="fade-in-line">which is as tall as this building at ${address}:</div>
-            <div class="fade-in-line"><a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${address}"></a></div>
-            <div class="fade-in-line">See it on <a href="${googleMapsURL}" target="_blank">Google Maps</a></div>
-            <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
-            <div class="fade-in-line">${density} | ${city} | ${county}</div>
+            <div class="fade-in-line"><br><a href="${googleMapsURL}" target="_blank"><img src="${streetViewURL}" alt="Google Street View of ${address}"></a></div>
+            <div class="fade-in-line">Find it on <a href="${googleMapsURL}" target="_blank">Google Maps</a></div>
+            <div class="fade-in-line"><br>Since your property is only ${distance} miles away, you're eligible to build up to this limit.</div>
+            <div class="fade-in-line"><br><br><br><i>Hope this helps, buddy!</i></div>
         `;
         
         if (!density || density <= 0) {
             resultContent += `
-                <div class="fade-in-line"><br>orry, I don't know the maximum residential density here.</div>
-                <div class="fade-in-line"><br>But worry not, because I've just added this municipality to my list of cities and counties to add.</div>
-                <div class="fade-in-line">Come back next week, maybe?</div>
-                <div class="fade-in-line"><br><br>[Debug information]:<br>city = ${city}; county = ${county}<br></div>
+                <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
+                <div class="fade-in-line"><br>But don't cry -- I've just automatically added your municipality to my list of cities and counties to add.</div>
+                <div class="fade-in-line">Check again in a few days.</div>
+                <div class="fade-in-line"><br><br><br><br>[Debug information]:<br><br>city = ${city}<br>county = ${county}<br>density = ${density}<br></div>
             `;
         } else {
             resultContent += `
@@ -85,7 +85,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             setTimeout(() => {
                 line.style.opacity = '1';
             }, delay);
-            delay += 500; // 0.5 seconds delay for each line
+            delay += 1000; // 1.0 seconds delay for each line
         });
 
         // Hide loading and show "Try Again" button
