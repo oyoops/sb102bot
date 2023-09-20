@@ -1,3 +1,5 @@
+const mainHeader = document.getElementById('mainHeader');
+
 document.getElementById('searchForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -9,11 +11,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     // Show the loading indicator and hide the initial content
     loadingDiv.style.display = 'block';
+    mainHeader.style.display = 'none';
     initialContent.style.display = 'none';
 
-    // Reset the result div opacity to 0 for the fade-in effect on new data
+    // Reset the result div opacity to 0 to achieve the fade-in effect on new data
     resultDiv.style.opacity = 0;
 
+    // Reset the result div content to the loading indicator
     try {
         const response = await fetch('https://sb102bot.vercel.app/api/building_height', {
             method: 'POST',
@@ -74,7 +78,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
-        
+
         let delay = 0;
         const fadeInLines = document.querySelectorAll('.fade-in-line');
         fadeInLines.forEach(line => {
