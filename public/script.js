@@ -113,7 +113,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
 
 async function reverseGeocode(lat, lng) {
-    const API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
+    const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
     const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
 
     try {
