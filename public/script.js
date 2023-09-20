@@ -21,6 +21,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         });
 
         const data = await response.json();
+        console.log(data);
 
         const {
             height,
@@ -67,8 +68,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         }
         
+        // Set the content of the result div
         resultDiv.innerHTML = resultContent;
-    
+
+        // Set the opacity of the result div to 1
+        resultDiv.style.opacity = '1';
+
+        // Hide the loading indicator
+        loadingDiv.style.display = 'none';
 
         // Fade in each line with a delay
         const lines = resultDiv.querySelectorAll('.fade-in-line');
