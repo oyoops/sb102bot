@@ -45,6 +45,19 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const googleMapsURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
         const streetViewURL = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
 
+        // If we failed to get the address, attempt to reverse geocode the address using lat and long
+        if (address === "- ") {
+            console.log("No address returned. Attempting to reverse-geocode...")
+            // Attempt to reverse geocode the address using lat and long
+            const reverseGeocodedAddress = await reverseGeocode(latitude, longitude);
+            if (reverseGeocodedAddress) {
+                address = reverseGeocodedAddress;
+                console.log("Reverse-geocode successful!  Address:", address)
+            } else {
+                console.log("ERROR: Failed to reverse-geocode, so we have no address!")
+            }
+        }
+
         let resultContent = (address === "- ") ? `
             <div class="fade-in-line"><u><b><br></b></u></div>
             <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
@@ -97,6 +110,27 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = "Sorry, an error occurred. Please try again later.";
     }
 });
+
+
+async function reverseGeocode(lat, lng) {
+    const API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
+    const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
+
+    try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        if (data.status === "OK") {
+            // Return the formatted address
+            return data.results[0].formatted_address;
+        } else {
+            console.error("Geocoding error:", data.status);
+            return null;
+        }
+    } catch (error) {
+        console.error("Failed to reverse geocode:", error);
+        return null;
+    }
+}
 
 
 // Handle "Try Again" button click
