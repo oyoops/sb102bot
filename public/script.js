@@ -27,12 +27,12 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             height,
             latitude,
             longitude,
-            city = '-',
-            county = '-',
-            address = '-',
-            density = 0,
+            city,
+            county,
+            address,
+            density,
             distance,
-            building_name: buildingName = 'Unknown',
+            building_name
         } = data;
 
         const googleMapsURL = `https://www.google.com/maps?q=${latitude},${longitude}`;
