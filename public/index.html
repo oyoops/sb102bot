@@ -119,16 +119,20 @@
 </head>
 
 <body>
-    <h1>Can the <i>Live Local Act</i> benefit your property?</h1>
-    <p>Enter an address:</p>
-    <form id="searchForm">
-        <input type="text" id="addressInput" placeholder="123 Biscayne Blvd, Miami, FL'">
-        <br><br>
-        <button type="submit">Live Locally</button>
-    </form>
+    <h1>Could the <u>Live Local Act</u> benefit you?</h1>
+
+    <div id="initialContent">
+        <p><br>Enter an address.</p>
+        <form id="searchForm">
+            <input type="text" id="addressInput" placeholder="123 Biscayne Blvd, Miami, FL'">
+            <br><br>
+            <button type="submit">Let's see...</button>
+        </form>
+    </div>
 
     <div id="result"></div>
-    <div class="loading">Underwriting</div>
+    <div class="loading">Underwriting your site...</div>
+    <button id="tryAgainButton" style="display: none;">Try Again</button>
 
     <script src="script.js"></script>
 </body>

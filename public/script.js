@@ -3,10 +3,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     const inputAddress = document.getElementById('addressInput').value;
     const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
     const loadingDiv = document.querySelector('.loading');
 
-    // Show the loading indicator
+    // Show the loading indicator and hide the initial content
     loadingDiv.style.display = 'block';
+    initialContent.style.display = 'none';
 
     // Reset the result div opacity to 0 for the fade-in effect on new data
     resultDiv.style.opacity = 0;
@@ -22,7 +25,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         const data = await response.json();
         console.log(data);
-        
+
         const {
             height,
             latitude,
@@ -73,17 +76,10 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // Set the opacity of the result div to 1
         resultDiv.style.opacity = '1';
-
-        // Hide the loading indicator
+        
+        // Hide loading and show "Try Again" button
         loadingDiv.style.display = 'none';
-
-        // Fade in each line with a delay
-        const lines = resultDiv.querySelectorAll('.fade-in-line');
-        lines.forEach((line, index) => {
-            setTimeout(() => {
-                line.style.opacity = 1;
-            }, index * 500);  // 500ms delay for each line
-        });
+        tryAgainButton.style.display = 'block';
 
     } catch (error) {
         console.error(error);
@@ -92,9 +88,23 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 });
 
 
+// Handle "Try Again" button click
+document.getElementById('tryAgainButton').addEventListener('click', function() {
+    const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
+
+    // Hide results and "Try Again" button
+    resultDiv.style.opacity = '0';
+    tryAgainButton.style.display = 'none';
+
+    // Show the initial content
+    initialContent.style.display = 'block';
+});
+
 
 // Fade in the input box on page load
-//   (add a class to the input after the page loads to trigger the transition)
+//     (add a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
     setTimeout(() => {
         const input = document.getElementById('addressInput');
