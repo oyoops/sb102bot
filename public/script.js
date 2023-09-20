@@ -67,7 +67,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
                 <div class="fade-in-line"><br>But don't cry -- I've just automatically added your municipality to my list of cities and counties to add.</div>
                 <div class="fade-in-line">Check again in a few days.</div>
-                <div class="fade-in-line"><br><br><br><br>[Debug information]:<br><br>city = ${city}<br>county = ${county}<br>density = ${density}<br></div>
+                <div class="fade-in-line"><br><br><br><br>[Debug information]:<br><br>city = ${city}<br>county = ${county}<br>density = ${density}<br><br></div>
             `;
         } else {
             resultContent += `
