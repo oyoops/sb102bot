@@ -64,14 +64,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         if (!density || density <= 0) {
             resultContent += `
-                <div class="fade-in-line"><i>Sorry, I don't know the maximum residential density in this municipality.</i></div>
-                <div class="fade-in-line"><i>On the bright side, I've automatically added it to my list of requested cities/counties to add in the near future.</i></div>
-                <div class="fade-in-line"><i>Try again some other day!</i></div>
-                <div class="fade-in-line">${city} ${county}</div>
+                <div class="fade-in-line"><br>orry, I don't know the maximum residential density here.</div>
+                <div class="fade-in-line"><br>But worry not, because I've just added this municipality to my list of cities and counties to add.</div>
+                <div class="fade-in-line">Come back next week, maybe?</div>
+                <div class="fade-in-line"><br><br>[Debug information]:<br>city = ${city}; county = ${county}<br></div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location could match that.</div>
+                <div class="fade-in-line">The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.</div>
             `;
         }
         
