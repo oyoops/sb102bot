@@ -1,9 +1,15 @@
 document.getElementById('searchForm').addEventListener('submit', async function (e) {
     e.preventDefault();
+
     const inputAddress = document.getElementById('addressInput').value;
     const resultDiv = document.getElementById('result');
+    const loadingDiv = document.querySelector('.loading');
 
-    resultDiv.innerHTML = "Underwriting, please wait...";
+    // Show the loading indicator
+    loadingDiv.style.display = 'block';
+
+    // Reset the result div opacity to 0 for the fade-in effect on new data
+    resultDiv.style.opacity = 0;
 
     try {
         const response = await fetch('https://sb102bot.vercel.app/api/building_height', {
@@ -60,9 +66,15 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         resultDiv.innerHTML = resultContent;
 
+        // Show the result div content with a fade-in effect
+        resultDiv.style.opacity = 1;
+
     } catch (error) {
         console.error(error);
         resultDiv.innerHTML = "Sorry, an error occurred. Please try again later.";
+        resultDiv.style.opacity = 1;
+    } finally {
+        // Hide the loading indicator
+        loadingDiv.style.display = 'none';
     }
-
 });
