@@ -40,7 +40,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     // Reset the result div content to the loading indicator
     try {
-        const response = await fetch('https://sb102bot-gh.vercel.app/api/building_height', {
+        const response = await fetch('https://oyoops.com/api/building_height', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const tallestZip = tallestBuilding.address_components.find(c => c.types[0] === 'postal_code')?.short_name;
         const tallestAddress = `${tallestStreetNumber ? tallestStreetNumber + ' ' : ''}${tallestStreetName ? tallestStreetName + ', ' : ''}${tallestCity ? tallestCity + ', ' : ''}${tallestState ? tallestState + ' ' : ''}${tallestZip ? tallestZip : ''}`;
 
-        
         //
         //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
         //
