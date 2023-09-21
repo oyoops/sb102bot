@@ -1,0 +1,1195 @@
+### Outline:
+main.py: Line 1 - Line 187
+api/building_height.py: Line 188 - Line 284
+location.py: Line 285 - Line 363
+building.py: Line 364 - Line 459
+constants.py: Line 460 - Line 479
+utilities.py: Line 480 - Line 506
+density.py: Line 507 - Line 741
+public/index.html: Line 742 - Line 1041
+public/script.js: Line 1042 - Line 1219
+### File: main.py
+--------------------------------------------------
+from location import Location
+from building import Building
+from density import get_density
+from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
+
+# Main wrapper-wrapper
+#    (NOT used in web server implementation; ONLY used in command line implementation)
+def main_script():
+    input_data = input("Please enter an address (or lat,long coords): ")
+    result = get_building_height_from_input(input_data)
+    print(result['result'])
+
+# Main wrapper
+def get_building_height_from_input(input_data):
+    if not input_data:
+        return {"error": "Invalid input data."}
+    result = main(input_data)
+    response = {"result": result}
+    return response
+
+# MAIN
+def main(input_data):
+    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
+    
+    loc = Location(input_data)
+    
+    # Check if input_data is in the format of a COORDINATE PAIR or an ADDRESS
+    try:
+        lat, lon = map(float, input_data.split(','))
+    except ValueError:
+        lat, lon = loc.geocode_address()
+    
+    # If both input verification checks fail to yield a subject location, then ignore/override user input, use default coordinates
+    if lat is None or lon is None:
+        print("    ***********\n   **  ERROR  **   Failed to locate subject site...\n    ***********    Using example coordinates instead.")
+        lat, lon = 26.032865, -80.114964  # Example: Villas of Positano (along north Broadwalk in Hollywood Beach)
+
+    # Print the location of the subject property
+    print(f"\nSUBJECT PROPERTY:")
+    print(f"      Lat/Long:    {round(float(lat),5)}, {round(float(lon),5)}")    
+
+    city, county = loc.get_city_and_county()
+    if city:
+        print(f"      City:        {city}")
+    if county:
+        print(f"      County:      {county}\n")
+
+    building_obj = Building(lat, lon)
+    buildings = building_obj.get_building_heights()
+    
+    # Get the three tallest buildings within the radius
+    top_buildings = sorted(buildings, key=lambda x: float(x['height']), reverse=True)[:3]
+    if len(top_buildings) == 0:
+        print(f"RESULTS:\n  No buildings were found within a mile of your site!")
+        return
+    elif len(top_buildings) == 1:
+        print(f"RESULTS:\n  (only {len(top_buildings)} building found)")
+    elif len(top_buildings) > 1 and len(buildings) == len(top_buildings):
+        print(f"RESULTS:\n  (showing all {len(top_buildings)} buildings found)")
+    elif len(buildings) != len(top_buildings):
+        print(f"RESULTS:\n  (showing tallest {len(top_buildings)} of the {len(buildings)} total buildings found)")
+    else:
+        print(f"RESULTS:\n\n  <<-- WARNING! -->>\n\n  (showing only the tallest {len(top_buildings)} of {len(buildings)} buildings found)")
+
+    # Iterate through the top 3 tallest buildings in the results
+    for idx, building in enumerate(top_buildings):
+
+        # Convert meters to feet
+        building['height'] = float(building['height']) * 3.28084
+        
+        # Estimate stories. We are only concerned with the tallest building; since the list is already sorted by descending height, calculate approx_stories only once (in the first iteration)
+        if idx == 0: approx_stories = int(building['height'] / FEET_IN_STORY)  # Assume 10.5ft/story
+        
+        # Round down height in feet
+        building['height'] = int(building['height'])
+
+        # Get building info
+        binfo = building_obj.get_building_info(building['id'], building['type'])
+
+        # Default to getting the building's lat/long from its geometry, if available
+        geometry = building_obj.fetch_geometry(building['id'], building['type'])
+        if geometry and len(geometry) > 0:
+            # Use the first coordinate pair from the geometry as the building's location
+            building_lat, building_lon = geometry[0]
+            building_lat = round(building_lat, 5)
+            building_lon = round(building_lon, 5)
+        elif binfo['Latitude'] is not None and binfo['Longitude'] is not None:
+            # If geometry is not available but exact coordinates are, use them
+            building_lat = round(float(binfo['Latitude']), 5)
+            building_lon = round(float(binfo['Longitude']), 5)
+        else:
+            # If neither geometry nor exact coordinates are available, set to None
+            building_lat = None
+            building_lon = None
+
+        # Get building info from OSM    --->  MOSTLY USELESS!!  <---
+        bldg_name = binfo.get('Tags', {}).get('name', "-")
+        bldg_address = f"{binfo.get('Tags', {}).get('addr:housenumber', '-')} {binfo.get('Tags', {}).get('addr:street', '')}"
+
+        # Calculate distance between site and building, if possible
+        if building_lat is not None and building_lon is not None:
+            distance = Location.haversine_distance(lat, lon, building_lat, building_lon)
+
+            distance_str = "Very close to subject (<0.01 mi.)" if distance < 0.01 else f"{distance:.2f} mi. from subject"
+        else:
+            distance_str = "Distance not available"
+
+        # Print a summary of the three tallest buildings found
+        print(f"\n  #{idx + 1}  Name:        {bldg_name}")
+        print(f"      Height:      {building['height']} feet")
+        print(f"      Address:     {bldg_address}")
+        if building_lat and building_lon:
+            print(f"      Lat, Long:   {building_lat}, {building_lon}")
+        else:
+            print(f"      Lat, Long:   ** Not available **")
+        print(f"      Distance:    {distance_str}")
+
+    # Fancy print of final result
+    print(f"\n .--------------------------------------------------------------------------------.      ")
+    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
+    print(f" '--------------------------------------------------------------------------------'     \n\n")
+    
+    ##bldg_address = f"{bldg_info.get('Tags', {}).get('addr:housenumber', '-')} {bldg_info.get('Tags', {}).get('addr:street', '')}"
+
+
+
+    # Get only the tallest building within the radius
+    tallest_building = max(buildings, key=lambda x: float(x['height']))
+    tallest_building_info = building_obj.get_building_info(tallest_building['id'], tallest_building['type'])
+    # Find its name, if it has one
+    tallest_bldg_name = tallest_building_info.get('Tags', {}).get('name', None)
+    # Fix name if '-' or missing
+    if not tallest_bldg_name or tallest_bldg_name == "-":
+        tallest_bldg_name = "Unknown"
+    # Find its address
+    tallest_bldg_address = f"{tallest_building_info.get('Tags', {}).get('addr:housenumber', '-')} {tallest_building_info.get('Tags', {}).get('addr:street', '')}"
+    
+    # Find its lat/long, if available (default: first point in its OSM geometry)
+    tallest_geometry = building_obj.fetch_geometry(tallest_building['id'], tallest_building['type'])
+    if tallest_geometry and len(tallest_geometry) > 0:
+        # Use the first coordinate pair from the geometry as the building's location
+        tallest_building_lat, tallest_building_lon = tallest_geometry[0]
+        tallest_building_lat = round(tallest_building_lat, 5)
+        tallest_building_lon = round(tallest_building_lon, 5)
+    elif tallest_building_info['Latitude'] is not None and tallest_building_info['Longitude'] is not None:
+        # If geometry is not available but exact coordinates are, use them
+        tallest_building_lat = round(float(tallest_building_info['Latitude']), 5)
+        tallest_building_lon = round(float(tallest_building_info['Longitude']), 5)
+    else:
+        # If neither geometry nor exact coordinates are available, set to None
+        tallest_building_lat = None
+        tallest_building_lon = None
+    
+
+
+    # Calculate distance between subject site and the tallest building, if possible
+    if tallest_building_lat is not None and tallest_building_lon is not None:
+        distance = Location.haversine_distance(lat, lon, tallest_building_lat, tallest_building_lon)
+        distance = round(distance, 2)
+    else:
+        distance = None
+
+    # Lookup max density in our density table
+    max_density = get_density(city) if city is not None else get_density(county)
+
+    # Return the necessary info
+    return {
+        "height": int(tallest_building['height']),
+        "address": tallest_bldg_address,
+        "latitude": tallest_building_lat,
+        "longitude": tallest_building_lon,
+        "city": city,
+        "county": county,
+        "density": max_density,
+        "distance": distance,
+        "building_name": tallest_bldg_name
+    }
+
+##########################################################################################
+
+if __name__ == '__main__':
+    main_script()
+--------------------------------------------------
+### File: api/building_height.py
+--------------------------------------------------
+from main import get_building_height_from_input
+from density import get_density, density_data
+from location import Location
+from http.server import BaseHTTPRequestHandler
+import json
+
+###  This setup allows you to send a POST request
+###  to https://sb102bot/api/building_height
+###  to execute the get_building_height_from_input function.
+
+
+class handler(BaseHTTPRequestHandler):
+
+    def send_cors_headers(self):
+        """Set headers for Cross-Origin Resource Sharing (CORS)"""
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+
+    def do_OPTIONS(self):
+        """Respond to an OPTIONS request."""
+        self.send_response(204)
+        self.send_cors_headers()
+        self.end_headers()
+    
+    def do_GET(self):
+        # Handle the GET request here, maybe return a basic message or form
+        self.send_response(200)
+        self.send_cors_headers()
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(str("Send a POST request with an address to get the building height.").encode())
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        input_data = post_data.decode("utf-8")
+
+        # Extract city and county from the location
+        loc = Location(input_data)
+        city, county = loc.get_city_and_county()
+
+        # Print city and county values after they are determined
+        print("City:", city)
+        print("County:", county)
+        
+        # Determine density value based on city or county or default to 0
+        if city:
+            density_value = get_density(city)
+        elif county:
+            density_value = get_density(county)
+        else:
+            density_value = 0
+
+        # Print the determined density value
+        print("Max density in municipality: ", density_value, "units/ac.")
+
+        # Get the building height for the given location
+        result = get_building_height_from_input(input_data)
+
+        ### (debug) print the JSON being sent to client
+        print(result)
+
+        # Fix building name if it is '-' or missing
+        building_name = result["result"].get("name", None)
+        if not building_name or building_name == "-":
+            building_name = "Unknown"
+
+        # Round the distance to 2 decimal places
+        distance = result["result"].get("distance", None)
+        if distance is not None:
+            distance = round(distance, 2)
+
+        # Send the response
+        self.send_response(200)
+        self.send_cors_headers()
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        
+        response = {
+            "height": result["result"].get("height", None),
+            "address": result["result"].get("address", None),
+            "latitude": result["result"].get("latitude", None),
+            "longitude": result["result"].get("longitude", None),
+            "city": city or "-",
+            "county": county or "-",
+            "density": density_value,
+            "distance": distance,
+            "building_name": building_name
+        }
+
+        self.wfile.write(json.dumps(response).encode())
+--------------------------------------------------
+### File: location.py
+--------------------------------------------------
+import requests
+import math
+from constants import GOOGLE_API_KEY
+
+class Location:
+
+    def __init__(self, input_data):
+        self.input_data = input_data
+        self.latitude = None
+        self.longitude = None
+
+    def geocode_address(self):
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            'address': self.input_data,
+            'key': GOOGLE_API_KEY
+        }
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            raise ValueError("Error geocoding address. Check the address and try again.")
+        self.latitude = data['results'][0]['geometry']['location']['lat']
+        self.longitude = data['results'][0]['geometry']['location']['lng']
+
+        return self.latitude, self.longitude
+
+    def get_city_and_county(self):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        
+        query = f"""
+        [out:json];
+        (
+            is_in({self.latitude}, {self.longitude});
+            area._[boundary=administrative][admin_level~"[68]"];
+        );
+        out tags;
+        """
+        
+        response = requests.get(overpass_url, params={'data': query})
+        data = response.json()
+        
+        # Printing the entire data from Overpass API
+        print("Overpass API Data:", data)
+        
+        city = None
+        county = None
+
+        for element in data['elements']:
+            if 'tags' in element:
+                if 'admin_level' in element['tags'] and element['tags']['admin_level'] == '6':
+                    county = element['tags'].get('name', None)
+                elif 'admin_level' in element['tags'] and element['tags']['admin_level'] == '8':
+                    city = element['tags'].get('name', None)
+
+        # Printing the final city and county values
+        print("Extracted City:", city)
+        print("Extracted County:", county)
+                    
+        return city, county
+    
+
+    @staticmethod
+    def haversine_distance(lat1, lon1, lat2, lon2):
+        lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = (math.sin(dlat/2)**2 + 
+             math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2)
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        distance = 6371 * c
+        return distance * 0.621371
+
+
+--------------------------------------------------
+### File: building.py
+--------------------------------------------------
+import requests
+import xml.etree.ElementTree as ET
+from constants import METERS_IN_MILE, DEFAULT_RADIUS_IN_MILES
+
+class Building:
+
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def get_building_heights(self, radius_meters=METERS_IN_MILE*DEFAULT_RADIUS_IN_MILES):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        query = f"""
+        [out:json];
+        (
+          way["building"](around:{radius_meters},{self.latitude},{self.longitude});
+          relation["building"](around:{radius_meters},{self.latitude},{self.longitude});
+        );
+        out body;
+        """
+        response = requests.get(overpass_url, params={'data': query})
+        data = response.json()
+
+        buildings = []
+        for element in data['elements']:
+            if 'tags' in element and 'height' in element['tags']:
+                buildings.append({
+                    'type': element['type'],
+                    'id': element['id'],
+                    'height': element['tags']['height']
+                })
+        return buildings
+
+    def get_building_info(self, building_id, building_type='way'):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        query = f"""
+        [out:json];
+        {building_type}(id:{building_id});
+        out body;
+        """
+        response = requests.get(overpass_url, params={'data': query})
+        data = response.json()
+        
+        if not data['elements']:
+            print(f"No information found for {building_type} with ID {building_id}")
+            return
+        
+        building_info = data['elements'][0]
+        summary = {
+            'ID': building_info['id'],
+            'Type': building_info['type'],
+            'Latitude': building_info['center']['lat'] if 'center' in building_info else None,
+            'Longitude': building_info['center']['lon'] if 'center' in building_info else None,
+            'Tags': building_info['tags'] if 'tags' in building_info else None
+        }
+        return summary
+
+    def fetch_geometry(self, osm_id, osm_type):
+        if osm_type not in ['way', 'relation']:
+            return None
+
+        url = f"https://api.openstreetmap.org/api/0.6/{osm_type}/{osm_id}.json"
+        response = requests.get(url)
+        data = response.json()
+
+        if osm_type == 'way':
+            nodes = data['elements'][0]['nodes']
+        else:
+            return None
+
+        nodes_str = ",".join(map(str, nodes))
+        url = f"https://api.openstreetmap.org/api/0.6/nodes?nodes={nodes_str}"
+        response = requests.get(url)
+        
+        if response.status_code != 200:
+            print(f"Error fetching nodes. Status Code: {response.status_code}")
+            print("Response content:")
+            print(response.text)
+            return None
+
+        root = ET.fromstring(response.content)
+        nodes = []
+        for node in root.findall('node'):
+            lat = float(node.attrib['lat'])
+            lon = float(node.attrib['lon'])
+            nodes.append((lat, lon))
+
+        geometry = nodes
+        
+        return geometry
+
+--------------------------------------------------
+### File: constants.py
+--------------------------------------------------
+
+# APIs:
+GOOGLE_API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc'
+
+# Distance conversions:
+METERS_IN_MILE = 1609.34
+
+# Rules:
+DEFAULT_RADIUS_IN_MILES = 1.1
+
+####################################################################################################
+
+# Assumptions:
+FEET_IN_STORY = 10
+
+--------------------------------------------------
+### File: utilities.py
+--------------------------------------------------
+# Get a value from a nested dictionary, even if the key doesn't exist
+def safe_get(dictionary, keys, default=None):
+    """
+    A helper function to safely get a value from a nested dictionary.
+    """
+    for key in keys:
+        if key in dictionary:
+            dictionary = dictionary[key]
+        else:
+            return default
+    return dictionary
+
+# Get coord pair from geometry
+def calculate_centroid(geometry):
+    """
+    Get the centroid from a geometry list.
+    """
+    # If the geometry list is not empty, return the first coordinate pair
+    if geometry and isinstance(geometry, list) and isinstance(geometry[0], tuple) and len(geometry[0]) >= 2:
+        return geometry[0]
+    return None, None
+
+--------------------------------------------------
+### File: density.py
+--------------------------------------------------
+
+# Define the max-density-per-acre dictionary
+density_data = {
+    "MIAMI-DADE": 50,
+    "MIAMI-DADE COUNTY": 50,
+    "MIAMI DADE COUNTY": 50,
+    "MIAMI": 100,
+    "MIAMI BEACH": 100,
+    "FT. LAUDERDALE": 100,
+    "FORT LAUDERDALE": 100,
+    "FT LAUDERDALE": 100,
+    "FORT LAUDERDALE": 100,
+    "BROWARD": 50,
+    "PALM BEACH": 50,
+    "PALM BEACH COUNTY": 50,
+
+    "MARTIN": 15,
+    "MARTIN COUNTY": 15,
+    "ST. LUCIE": 15,
+    "ST LUCIE": 15,
+    "ST. LUCIE COUNTY": 15,
+    "ST LUCIE COUNTY": 15,
+    "INDIAN RIVER": 15,
+    "INDIAN RIVER COUNTY": 15,
+    "OKEECHOBEE": 15,
+    "OKEECHOBEE COUNTY": 15,
+    "HENDRY": 15,
+    "HENDRY COUNTY": 15,
+    "GLADES": 15,
+    "GLADES COUNTY": 15,
+    "COLLIER": 15,
+    "COLLIER COUNTY": 15,
+    "LEE": 15,
+    "LEE COUNTY": 15,
+    "CHARLOTTE": 15,
+    "CHARLOTTE COUNTY": 15,
+    "DESOTO": 15,
+    "DESOTO COUNTY": 15,
+    "HIGHLANDS": 15,
+    "HIGHLANDS COUNTY": 15,
+    "HARDEE": 15,
+    "HARDEE COUNTY": 15,
+    "MANATEE": 15,
+    "MANATEE COUNTY": 15,
+    "SARASOTA": 15,
+    "SARASOTA COUNTY": 15,
+    "DE SOTO": 15,
+    "DE SOTO COUNTY": 15,
+    "PINELLAS": 15,
+    "PINELLAS COUNTY": 15,
+    "HILLSBOROUGH": 15,
+    "HILLSBOROUGH COUNTY": 15,
+    "PASCO": 15,
+    "PASCO COUNTY": 15,
+    "HERNANDO": 15,
+    "HERNANDO COUNTY": 15,
+    "CITRUS": 15,
+    "CITRUS COUNTY": 15,
+    "SUMTER": 15,
+    "SUMTER COUNTY": 15,
+    "LAKE": 15,
+    "LAKE COUNTY": 15,
+    "VOLUSIA": 15,
+
+    "DAYTONA": 15,
+    "DAYTONA BEACH": 15,
+    "ORMOND": 15,
+    "ORMOND BEACH": 15,
+    "FLAGLER": 15,
+    "FLAGLER COUNTY": 15,
+
+    "JACKSONVILLE": 15,
+
+    "TAMPA": 15,
+
+    "ORLANDO": 15,
+
+    "OCALA": 15,
+
+    "GAINESVILLE": 15,
+
+    "TALLAHASSEE": 15,
+
+    "PENSACOLA": 15,
+
+    "KEY WEST": 100,
+
+    "KEY LARGO": 100,
+
+    "MARATHON": 100,
+
+    "ISLAMORADA": 100,
+
+    "BIG PINE": 100,
+
+    "BIG PINE KEY": 100,
+
+
+    "STUART": 30,
+
+    "PORT ST. LUCIE": 30,
+    "PORT ST LUCIE": 30,
+    "PORT SAINT LUCIE": 30,
+
+    "FORT PIERCE": 30,
+
+    "VERO BEACH": 30,
+
+    "OKEECHOBEE": 30,
+
+    "CLEWISTON": 30,
+
+    "BELLE GLADE": 30,
+
+    "PAHOKEE": 30,
+
+    "SOUTH BAY": 30,
+
+    "IMMOKALEE": 30,
+
+    "NAPLES": 30,
+
+    "FORT MYERS": 30,
+
+    "CAPE CORAL": 30,
+
+    "PUNTA GORDA": 30,
+
+    "ARCADIA": 30,
+
+    "BRADENTON": 30,
+
+    "SARASOTA": 30,
+
+    "VENICE": 30,
+
+    "NORTH PORT": 30,
+
+    "PORT CHARLOTTE": 30,
+
+    "BROOKSVILLE": 30,
+
+    "INVERNESS": 30,
+
+    "BUSHNELL": 30,
+
+    "LEESBURG": 30,
+
+    "EUSTIS": 30,
+
+    "DELAND": 30,
+
+    "HOLLYWOOD": 100,
+    "HOLLYWOOD BEACH": 100,
+    
+    "HALLANDALE": 100,
+    "HALLANDALE BEACH": 100,
+
+    "SUNNY ISLES": 100,
+    "SUNNY ISLES BEACH": 100,
+
+    "AVENTURA": 100,
+
+    "NORTH MIAMI": 100,
+    "NORTH MIAMI BEACH": 100,
+
+    "MIAMI GARDENS": 100,
+
+    "MIAMI LAKES": 100,
+
+    "MIAMI SPRINGS": 100,
+
+    "MIAMI SHORES": 100,
+
+    "MIAMI BEACH": 100,
+
+    "SURFSIDE": 100,
+
+    "BAL HARBOUR": 100,
+
+    "BAY HARBOR": 100,
+    "BAY HARBOR ISLANDS": 100,
+
+    "INDIAN CREEK": 100,
+
+    "SOUTH MIAMI": 100,
+
+    "CORAL GABLES": 100,
+
+    "COCONUT GROVE": 100,
+    
+    "KEY BISCAYNE": 100,
+
+    "PINECREST": 100,
+
+    "PALMETTO BAY": 100,
+
+    "CUTLER BAY": 100,
+
+    "HOMESTEAD": 100,
+
+    "FLORIDA CITY": 100,
+
+    "SWEETWATER": 100,
+
+    "WEST MIAMI": 100,
+
+    "MIAMI": 100,
+    
+    "ST. PETE": 80,
+    "ST PETE": 80,
+    "ST. PETERSBURG": 80,
+    "ST PETERSBURG": 80,
+    "ST. AUGUSTINE": 50,
+
+}
+
+def get_density(location: str) -> int:
+    """Retrieve the density per acre for a given location."""
+    # Convert the location to uppercase to match the dictionary keys
+    location = location.upper()
+    
+    # Printing the received location and the resulting density value
+    density_val = density_data.get(location, 0)
+    print(f"Location Received: {location}, Density Value: {density_val}")
+    
+    # Return the density value
+    return density_val
+
+
+--------------------------------------------------
+### File: public/index.html
+--------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Live Local Calculator</title>
+    
+    <!-- Import Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        html {
+            background: linear-gradient(to bottom, #f4f4f4, #e6e9ec);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #f4f4f4, #e6e9ec); /* gradient background */
+            /*background-color: #f4f4f4;*/
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden; /* hide horizontal overflow */
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif; /* changed header font */
+            font-size: 2.5em; /* increased size for emphasis */
+            color: #333;
+            margin-top: 50px; /* adjust this value as needed to fix appearance upon Try Again */
+            font-weight: 700;
+        }
+
+        p {
+            color: #666;
+            font-weight: 300;
+        }
+
+        form {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #addressInput {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 1s, transform 1s;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #4678dc;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #044b98;
+        }
+
+        /* Floating Menu Bar at the top */
+        #menuBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px 0;
+            background-color: #afc6ed;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #menuBar a:first-child {
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        #menuBar a:last-child {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        #sunIcon {
+            display: inline-block;
+            background-color: #2b18b8;
+            border-radius: 50%;
+            width: 50x;
+            height: 50px;
+            position: relative;
+        }
+
+        #sunIcon::before {
+            content: "☀️";
+            font-size: 2.0em;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Enhanced footer for Try Again button*/
+        footer {
+            padding: 20px;
+            background-color: #afc6ed;
+            box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.0em;
+        }
+
+        footer a {
+            color: #044b98;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        #tryAgainButton {
+            position: fixed;
+            bottom: 20px; /* Push it a bit up from the bottom */
+            left: 50%;
+            font-weight: 500; 
+            transform: translateX(-50%);
+            background-color: #afc6ed;
+            color: #333;
+            z-index: 1001; /* Make sure it's above other elements */
+        }
+
+        #result {
+            transition: opacity 0.5s;
+            width: 80vw;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            max-width: 51%;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: none;
+            font-weight: 700;
+            color: #007BFF;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading::after {
+            content: '...';
+            animation: spin 1s infinite;
+        }
+
+        .fade-in-line {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .imageContainer {
+            display: flex; 
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            justify-content: space-around; 
+            align-items: center; 
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .imageContainer p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .imageItem {
+            width: calc(50% - 2%); /* 50% width minus a 1% margin on each side */
+            margin: 1% 1%; 
+            text-align: center; 
+            box-sizing: border-box;
+        }
+
+        .imageItem img {
+            width: 100%; /* Make the image take up the entire width of its container */
+            max-width: 600px; /* Cap to a maximum size */
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+    <!-- Floating Menu Bar -->
+    <div id="menuBar">
+        <a href="#">Link 1</a>
+        <div id="sunIcon"></div>
+        <a href="#">Link 2</a>
+    </div>
+
+    <!-- Main Header -->
+    <h1 id="mainHeader">
+        What does the <b>Live Local Act</b> let me do?
+    </h1>
+    
+    <!-- Initial Content -->
+    <div id="initialContent">
+        <p>
+            <br>Enter an address to find out.
+        </p>
+        <form id="searchForm">
+            <input type="text" id="addressInput" placeholder="420 Calle Ocho, Miami, FL">
+            <br><br>
+            <button type="submit">Underwrite</button>
+        </form>
+        
+        <p>
+            <br>Discover your property's development potential in less than 30 seconds.
+            <br>How locally can you really live by utilizing Florida's new state law?
+        </p>
+        
+        <!-- Attribution -->
+        <p>
+            <br><br><br><br><br><br>
+            Last updated Sept. 21, 2023
+            <br>Created by <a href="https://twitter.com/oyoops" target="_blank">
+                <u>@oyoops</u>
+            </a>
+        </p>
+        
+    </div>
+    
+    <!-- Result Content -->
+    <div id="result">
+        <div class="imageContainer">
+            <div id="inputAddressImage" class="imageItem"></div>
+            <div id="tallestBuildingImage" class="imageItem"></div>
+        </div>
+    </div>
+
+    <!-- Loading Animation
+--------------------------------------------------
+### File: public/script.js
+--------------------------------------------------
+const mainHeader = document.getElementById('mainHeader');
+
+document.getElementById('searchForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const inputAddress = document.getElementById('addressInput').value;
+    const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
+    const loadingDiv = document.querySelector('.loading');
+
+    // Show the loading indicator and hide the initial content
+    loadingDiv.style.display = 'block';
+    mainHeader.style.display = 'none';
+    initialContent.style.display = 'none';
+
+    // Reset the result div opacity to 0 to achieve the fade-in effect on new data
+    resultDiv.style.opacity = 0;
+
+    // Reset the result div content to the loading indicator
+    try {
+        const response = await fetch('https://sb102bot.vercel.app/api/building_height', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ address: inputAddress }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+        
+        const {
+            height,
+            latitude,
+            longitude,
+            city,
+            county,
+            address,
+            density,
+            distance,
+            building_name
+        } = data;
+        
+        const latitudeTallest = latitude;
+        const longitudeTallest = longitude;
+        
+        //
+        //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
+        //
+        // Show the input property in street view / google maps
+        const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
+        
+        // Show tallest building within radius in street view / google maps
+        const googleMapsURLTallest = `https://www.google.com/maps?q=${latitudeTallest},${longitudeTallest}`;
+        const streetViewURLTallest = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitudeTallest},${longitudeTallest}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
+
+        let resultContent = `
+            <div class="imageContainer">
+                <div class="imageItem">
+                    <div class="fade-in-line"><br><u><b><h3>Your Property</h3></b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">your site</a> in Google Maps<br><br></div>
+                </div>
+                <div class="imageItem">
+                    <div class="fade-in-line"><br><u><b><h3>Tallest Nearby</h3></b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Nearby Building"></a></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLTallest}" target="_blank">tallest building</a> within a mile<br><br></div>
+                </div>
+            </div>
+        `;
+    
+        console.log("Tallest Bldg. Address: ", address)
+
+        if (address === "- ") {
+            resultContent += `
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+            `;
+        } else {
+            resultContent += `
+                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+            `;
+        }
+        
+        if (!density || density <= 0) {
+            resultContent += `
+                <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of municipalities to add some day. <br>Check back next week.</div>
+            `;
+        } else {
+            resultContent += `
+                <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br></div>
+            `;
+        }
+
+        // Set the content of the result div
+        resultDiv.innerHTML = resultContent;
+        resultDiv.style.opacity = '1';
+
+        // Fade in the lines one by one
+        let delay = 0;
+        const fadeInLines = document.querySelectorAll('.fade-in-line');
+        fadeInLines.forEach(line => {
+            setTimeout(() => {
+                line.style.opacity = '1';
+            }, delay);
+            delay += 500; // 0.5 seconds delay for each line
+        });
+
+        // Hide loading indicator and show the 'Try Again' button
+        loadingDiv.style.display = 'none';
+        tryAgainButton.style.display = 'block';
+
+    } catch (error) {
+        console.error(error);
+        resultDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
+    }
+});
+
+
+async function reverseGeocode(lat, lng) {
+    const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
+    const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
+
+    try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        if (data.status === "OK") {
+            // Return the formatted address
+            return data.results[0].formatted_address;
+        } else {
+            console.error("Geocoding error:", data.status);
+            return null;
+        }
+    } catch (error) {
+        console.error("Failed to reverse geocode:", error);
+        return null;
+    }
+}
+
+
+// Handle 'Try Again' button click
+document.getElementById('tryAgainButton').addEventListener('click', function() {
+    const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
+    const mainHeader = document.getElementById('mainHeader');
+
+    // Hide results and "Try Again" button
+    resultDiv.style.opacity = '0';
+    tryAgainButton.style.display = 'none';
+
+    // Show the initial content and the main header
+    initialContent.style.display = 'block';
+    mainHeader.style.display = 'block';
+
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
+});
+
+
+// Fade in the input box upon page load
+//     (adds a class to the input after the page loads to trigger the transition)
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const input = document.getElementById('addressInput');
+        input.style.opacity = 1;
+        input.style.transform = 'translateY(0)';
+    }, 100); // slight delay to ensure styles are applied after load
+});
+--------------------------------------------------
