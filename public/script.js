@@ -45,7 +45,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const latitudeTallest = latitude;
         const longitudeTallest = longitude;
         
-        
         //
         //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
         //
@@ -57,7 +56,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const googleMapsURLTallest = `https://www.google.com/maps?q=${latitudeTallest},${longitudeTallest}`;
         const streetViewURLTallest = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitudeTallest},${longitudeTallest}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
 
-        
         let resultContent = `
             <div class="imageContainer">
                 <div class="imageItem">
@@ -99,12 +97,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         }
 
-        // add debug info to the readable HTML response
-        ////resultContent += `
-        ////    <div class="fade-in-line"><br><br><br><br><b>Created by <u><a href="https://twitter.com/oyoops" target="_blank">@oyoops</a></u></b><br>
-        ////</br></br></br></br>`;
-        ////    <div class="fade-in-line"><br><br><br><br><u><i>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}</i><br><br></div>
-        
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
