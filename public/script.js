@@ -88,8 +88,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
-                <div class="fade-in-line">Cheer up, though; I've just added your property to my list of municipalities to support in the future.</div>
-                <div class="fade-in-line">Check back next week.</div>
+                <div class="fade-in-line"><br>Cheer up, though, because I've just added your property to my list of municipalities to support in the future. Check back next week.</div>
             `;
         } else {
             resultContent += `
