@@ -101,7 +101,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // add debug info to the readable HTML response
         resultContent += `
-            <div class="fade-in-line"><br><br><br><i>Created by <u><a href="https://twitter.com/oyoops">@oyoops</a></u></i><br>
+            <div class="fade-in-line"><br><br><br><br>created by <u><a href="https://twitter.com/oyoops">@oyoops</a></u><br>
         `;
         ////    <div class="fade-in-line"><br><br><br><br><u><i>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}</i><br><br></div>
         
