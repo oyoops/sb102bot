@@ -75,20 +75,21 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         if (address === "- ") {
             resultContent += `
-                <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
-                <div class="fade-in-line">which is as tall as this building at ${latitude}, ${longitude}:</div>
                 <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${latitude},${longitude}"></a></div>
-                <div class="fade-in-line">See it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
-                <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
-                <div class="fade-in-line">${density} | ${city} | ${county}</div>
+                <div class="fade-in-line">By utilizing the Live Local Act, you could build as high as <b>${height} feet</b> here,</div>
+                <div class="fade-in-line">which is the height of the building pictured above (click for location).</div>
+                <div class="fade-in-line"><br><a href="${googleMapsURLTallest}" target="_blank">Open in Google Maps</a></div>
+                <div class="fade-in-line">Since your property is only ${distance} miles away, ${height}' becomes your effective height limit.</div>
+                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
-                <div class="fade-in-line">which is as tall as this building at ${address}:</div>
                 <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${address}"></a></div>
-                <div class="fade-in-line">Find it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
-                <div class="fade-in-line">Since your property is only ${distance} miles away, you're eligible to build up to this limit.</div>
+                <div class="fade-in-line">By utilizing the Live Local Act, you can build as high as <b>${height} feet</b> here,</div>
+                <div class="fade-in-line">which is the height of the building at ${address}, pictured above.</div>
+                <div class="fade-in-line"><br><a href="${googleMapsURLTallest}" target="_blank">Open in Google Maps</a></div>
+                <div class="fade-in-line">Since your property is only ${distance} miles away, ${height}' becomes your effective height limit.</div>
+                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         }
         
