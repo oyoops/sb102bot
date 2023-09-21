@@ -97,13 +97,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br><br><br></div>
+                <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br></div>
             `;
         }
 
         // add some debug info to the readable HTML response
         resultContent += `
-            <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a><br><br><br><br>.</div>
+            <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a><br></div>
         `;
 
         // Set the content of the result div
@@ -157,14 +157,17 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     const resultDiv = document.getElementById('result');
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
+    const mainHeader = document.getElementById('mainHeader');
 
     // Hide results and "Try Again" button
     resultDiv.style.opacity = '0';
     tryAgainButton.style.display = 'none';
 
-    // Show the initial content
+    // Show the initial content and the main header
     initialContent.style.display = 'block';
+    mainHeader.style.display = 'block';
 });
+
 
 
 // Fade in the input box upon page load

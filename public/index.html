@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Live Local Calculator</title>
     
@@ -124,7 +124,8 @@
 
         .imageContainer {
             display: flex; 
-            justify-content: space-between; 
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            justify-content: space-around; 
             align-items: center; 
             margin-top: 20px;
             width: 100%;
@@ -134,15 +135,17 @@
             margin-top: 10px;
             font-size: 0.9rem;
         }
-        
+
         .imageItem {
             width: calc(50% - 2%); /* 50% width minus a 1% margin on each side */
-            margin: 1%; 
+            margin: 1% 1%; 
             text-align: center; 
+            box-sizing: border-box;
         }
 
         .imageItem img {
             width: 100%; /* Make the image take up the entire width of its container */
+            max-width: 600px; /* Cap to a maximum size */
             border-radius: 8px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
