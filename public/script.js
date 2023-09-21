@@ -78,20 +78,20 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (address === "- ") {
             resultContent += `
                 <div class="fade-in-line">By utilizing the <a href="https://google.com">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line"><br>Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
+                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         } else {
             resultContent += `
                 <div class="fade-in-line">By utilizing the L<a href="https://google.com">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line"><br>Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
+                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         }
         
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
-                <div class="fade-in-line">Fret not, though, because I've automatically added the subject municipality to the list of cities & counties to add in the future.</div>
-                <div class="fade-in-line"><br>Check back next week!</div>
+                <div class="fade-in-line">Cheer up, though, because I just added this to the list of municipalities to support in the near future.</div>
+                <div class="fade-in-line"><br>Check again next week...</div>
             `;
         } else {
             resultContent += `
