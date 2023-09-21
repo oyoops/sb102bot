@@ -8,15 +8,17 @@
     <title>Live Local Calculator</title>
     
     <!-- Import Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
     <style>
+
         body {
             font-family: 'Roboto', sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background: linear-gradient(to bottom, #f4f4f4, #e6e9ec); /* gradient background */
+            /*background-color: #f4f4f4;*/
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -25,6 +27,8 @@
         }
 
         h1 {
+            font-family: 'Playfair Display', serif; /* changed header font */
+            font-size: 2.5em; /* increased size for emphasis */
             color: #333;
             font-weight: 700;
         }
@@ -68,6 +72,62 @@
 
         button:hover {
             background-color: #044b98;
+        }
+
+        /* Floating Menu Bar at the top */
+        #menuBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 5px 0;
+            background-color: #afc6ed;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #sunIcon {
+            display: inline-block;
+            background-color: #f4d442;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+
+        #sunIcon::before {
+            content: "☀️";
+            font-size: 1.5em;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Enhanced footer for @oyoops attribution */
+        footer {
+            padding: 20px;
+            background-color: #afc6ed;
+            box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        footer a {
+            color: #044b98;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
         #tryAgainButton {
@@ -150,29 +210,47 @@
             border-radius: 8px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
-
     </style>
 </head>
 
-<body>
-    <h1 id="mainHeader">What does the <b>Live Local Act</b> mean for you?</h1>
+    <!-- Floating Menu Bar -->
+    <div id="menuBar">
+        <a href="#">Link 1</a>
+        <div id="sunIcon"></div>
+        <a href="#">Link 2</a>
+    </div>
 
+    <!-- Main Header -->
+    <h1 id="mainHeader">
+        What does the <b>Live Local Act</b> mean for you?
+    </h1>
+    
+    <!-- Initial Content -->
     <div id="initialContent">
-        <p><br>Enter an address:</p>
+        <p>
+            <br>Enter an address:
+        </p>
         <form id="searchForm">
             <input type="text" id="addressInput" placeholder="420 Calle Ocho, Miami, FL">
             <br><br>
             <button type="submit">Underwrite</button>
         </form>
         
-        <p>Just how locally can you truly live by utilizing Florida's new state law? Find out.</p>
+        <p>
+            Just how locally can one <i>really</i> live under new Florida law?
+            <br>Discover your property's development potential in 30 seconds or less.
+        </p>
         
         <p>
             <br><br><br><br><br><br><br>
-            <i>Created by <u><a href="https://twitter.com/oyoops" target="_blank">@oyoops</a></u></i>
+            Created by <a href="https://twitter.com/oyoops" target="_blank">
+                <i><u>@oyoops</u></i>
+            </a>
+            <br>Last update: Sept. 21, 2023
         </p>
     </div>
-        
+    
+    <!-- Result Content -->
     <div id="result">
         <div class="imageContainer">
             <div id="inputAddressImage" class="imageItem"></div>
@@ -180,8 +258,16 @@
         </div>
     </div>
 
+    <!-- Loading Animation -->
     <div class="loading">Conducting due diligence</div>
-    <b><button id="tryAgainButton" style="display: none;">Look up another property</button></b>
+
+    <!-- @oyoops Attribution -->
+    <footer>
+        Created by <a href="https://twitter.com/oyoops" target="_blank">@oyoops</a>
+    </footer>
+
+    <!-- Try Again Button -->
+    <button id="tryAgainButton" style="display: none;"><b>Look up another property</b></button>
 
     <script src="script.js"></script>
 </body>
