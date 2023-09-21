@@ -95,13 +95,15 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         console.log("Tallest Bldg. Address: ", tallestAddress)
 
         if (tallestAddress === "- ") {
+            // this may be obsolete
             resultContent += `
-                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the building located at <a href="${googleMapsURLTallest}" target="_blank">${tallestAddress}</a>, shown above.</div>
+            <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
                 <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         } else {
+            // this may always trigger
             resultContent += `
-                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the building located at <a href="${googleMapsURLTallest}" target="_blank">${tallestAddress}</a>, shown above.</div>
                 <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         }
