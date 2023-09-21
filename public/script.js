@@ -75,7 +75,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         if (address === "- ") {
             resultContent += `
-                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${latitude},${longitude}"></a></div>
                 <div class="fade-in-line">By utilizing the Live Local Act, you could build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of the building pictured above (click for location).</div>
                 <div class="fade-in-line"><br><a href="${googleMapsURLTallest}" target="_blank">Open in Google Maps</a></div>
@@ -84,7 +83,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${address}"></a></div>
                 <div class="fade-in-line">By utilizing the Live Local Act, you can build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of the building at ${address}, pictured above.</div>
                 <div class="fade-in-line"><br><a href="${googleMapsURLTallest}" target="_blank">Open in Google Maps</a></div>

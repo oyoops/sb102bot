@@ -124,11 +124,11 @@
         }
 
         .imageContainer {
-            display: flex; /* Use flexbox for layout */
-            justify-content: space-between; /* Distribute space between items */
-            align-items: center; /* Vertically center items */
-            flex-wrap: wrap; /* Wrap items if space is limited */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
             margin-top: 20px;
+            flex-wrap: nowrap; /* Do not wrap items */
         }
 
         .imageContainer img {
@@ -143,10 +143,9 @@
         }
 
         .imageItem {
-            flex: 1; /* Each item takes up equal space */
-            max-width: 48%; /* Maximum width of each item */
-            margin: 1%; /* A little space between items */
-            text-align: center; /* Center the text under each image */
+            flex: 0 0 48%; /* Do not grow or shrink, but start at 48% width */
+            margin: 1%; 
+            text-align: center; 
         }
         
     </style>
