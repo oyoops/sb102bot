@@ -11,7 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <style>
-
+        html {
+            background: linear-gradient(to bottom, #f4f4f4, #e6e9ec);
+        }
+        
         body {
             font-family: 'Roboto', sans-serif;
             text-align: center;
@@ -19,11 +22,12 @@
             padding: 0;
             background: linear-gradient(to bottom, #f4f4f4, #e6e9ec); /* gradient background */
             /*background-color: #f4f4f4;*/
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow-x: hidden; /* hide horizontal overflow */
         }
 
         h1 {
