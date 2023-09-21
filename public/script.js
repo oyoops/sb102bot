@@ -9,7 +9,8 @@ async function reverseGeocode(lat, lng) {
       const data = await response.json();
       if (data.status === "OK") {
         // Return the formatted address
-        return data.results[0].formatted_address; 
+        //return data.results[0].formatted_address;  //////////////////////////////
+        return data.results[0];
       } else {
         console.error("Geocoding error:", data.status);
         return null;
@@ -64,7 +65,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const latitudeTallest = latitude;
         const longitudeTallest = longitude;
 
-        const tallestAddress = await reverseGeocode(latitudeTallest, longitudeTallest);
+        const tallestBuilding = await reverseGeocode(latitudeTallest, longitudeTallest);
+        const tallestStreetNumber = tallestBuilding.address_components.find(c => c.types[0] === 'street_number')?.short_name;
+        const tallestStreetName = tallestBuilding.address_components.find(c => c.types[0] === 'route')?.short_name;
+        const tallestCity = tallestBuilding.address_components.find(c => c.types[0] === 'locality')?.short_name;
+        const tallestState = tallestBuilding.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name;
+        const tallestZip = tallestBuilding.address_components.find(c => c.types[0] === 'postal_code')?.short_name;
+        const tallestAddress = `${tallestStreetNumber ? tallestStreetNumber + ' ' : ''}${tallestStreetName ? tallestStreetName + ', ' : ''}${tallestCity ? tallestCity + ', ' : ''}${tallestState ? tallestState + ' ' : ''}${tallestZip ? tallestZip : ''}`;
+
         
         //
         //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
@@ -115,7 +123,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br></div>
+                <div class="fade-in-line">The highest residential density allowed in ${tallestCity !== '-' ? tallestCity : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br></div>
             `;
         }
 
