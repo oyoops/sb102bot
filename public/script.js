@@ -88,7 +88,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
-                <div class="fade-in-line"><br>Cheer up, though, because I've just added your property to my list of municipalities to support in the future. Check back next week.</div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of municipalities for me to add in the near future. <br>Check back next week.</div>
             `;
         } else {
             resultContent += `
@@ -107,7 +107,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             setTimeout(() => {
                 line.style.opacity = '1';
             }, delay);
-            delay += 1000; // 1.0 seconds delay for each line
+            delay += 500; // 0.5 seconds delay for each line
         });
 
         // Hide loading indicator and show the 'Try Again' button
@@ -157,7 +157,6 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     initialContent.style.display = 'block';
     mainHeader.style.display = 'block';
 });
-
 
 
 // Fade in the input box upon page load
