@@ -63,7 +63,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="imageItem">
                     <div class="fade-in-line"><br><u><b><h3>Your Property</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                    <div class="fade-in-line">Open the <a href="${googleMapsURLInput}" target="_blank">subject property</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">View the <a href="${googleMapsURLInput}" target="_blank">subject</a> property in Google Maps<br><br></div>
                 </div>
                 <div class="imageItem">
                     <div class="fade-in-line"><br><u><b><h3>Tallest Nearby</h3></b></u></div>
@@ -77,13 +77,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         if (address === "- ") {
             resultContent += `
-                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject</a> site is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
+                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject</a> site is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         }
         
@@ -101,7 +101,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // add debug info to the readable HTML response
         resultContent += `
-            <div class="fade-in-line"><br><br><br><br>created by <u><a href="https://twitter.com/oyoops">@oyoops</a></u><br>
+            <div class="fade-in-line"><br><br><br><br>Created by <u><a href="https://twitter.com/oyoops" target="_blank">@oyoops</a></u><br>
         `;
         ////    <div class="fade-in-line"><br><br><br><br><u><i>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}</i><br><br></div>
         
