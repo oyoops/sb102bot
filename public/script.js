@@ -61,14 +61,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         let resultContent = `
         <div class="image-container">
             <div class="image-item">
-                <div class="fade-in-line"><u><b>Your Input Address</b></u></div>
+                <div class="fade-in-line"><br><u><b>Your Property</b></u></div>
                 <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                <div class="fade-in-line">See it on <a href="${googleMapsURLInput}" target="_blank">Google Maps</a></div>
+                <div class="fade-in-line">See your property in <a href="${googleMapsURLInput}" target="_blank">Google Maps</a><br><br></div>
             </div>
             <div class="image-item">
-                <div class="fade-in-line"><u><b>Tallest Building Nearby</b></u></div>
-                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Building"></a></div>
-                <div class="fade-in-line">See it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
+                <div class="fade-in-line"><br><u><b>Tallest Building Nearby</b></u></div>
+                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Nearby Building"></a></div>
+                <div class="fade-in-line">See the tallest nearby building in <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a><br><br></div>
             </div>
         </div>
         `;
@@ -80,14 +80,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line">By utilizing the Live Local Act, you could build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of the building pictured above (click for location).</div>
                 <div class="fade-in-line"><br>Since <a href="${googleMapsURLTallest}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, ${height}' becomes its effective height limit.</div>
-                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
+                <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         } else {
             resultContent += `
                 <div class="fade-in-line">By utilizing the Live Local Act, you can build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of the building at ${address}, pictured above.</div>
                 <div class="fade-in-line"><br>Since <a href="${googleMapsURLTallest}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, ${height}' becomes its effective height limit.</div>
-                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
+                <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         }
         
@@ -96,11 +96,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
                 <div class="fade-in-line">Worry not, though, because I just added this municipality to the list of supported cities & counties.</div>
                 <div class="fade-in-line"><br>Check back next week!</div>
-                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
+                <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.</div>
+                <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br><br><br></div>
             `;
         }
     
@@ -117,16 +117,15 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             delay += 1000; // 1.0 seconds delay for each line
         });
 
-        // Hide loading indicator and show 'Try Again' button
+        // Hide loading indicator and show the 'Try Again' button
         loadingDiv.style.display = 'none';
         tryAgainButton.style.display = 'block';
 
     } catch (error) {
         console.error(error);
-        resultDiv.innerHTML = "Sorry, an error occurred. Please try again later.";
+        resultDiv.innerHTML = "Sorry, an error occurred. Try again later, maybe.";
     }
 });
-
 
 
 async function reverseGeocode(lat, lng) {
@@ -150,7 +149,7 @@ async function reverseGeocode(lat, lng) {
 }
 
 
-// Handle "Try Again" button click
+// Handle 'Try Again' button click
 document.getElementById('tryAgainButton').addEventListener('click', function() {
     const resultDiv = document.getElementById('result');
     const initialContent = document.getElementById('initialContent');
@@ -165,8 +164,8 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
 });
 
 
-// Fade in the input box on page load
-//     (add a class to the input after the page loads to trigger the transition)
+// Fade in the input box upon page load
+//     (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
     setTimeout(() => {
         const input = document.getElementById('addressInput');
