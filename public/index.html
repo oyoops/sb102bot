@@ -123,6 +123,22 @@
             transition: opacity 0.5s;
         }
 
+        .imageContainer {
+            margin-top: 20px;
+        }
+
+        .imageContainer img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .imageContainer p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+
     </style>
 </head>
 
@@ -138,7 +154,11 @@
         </form>
     </div>
 
-    <div id="result"></div>
+    <div id="result">
+        <div id="inputAddressImage" class="imageContainer"></div>
+        <div id="tallestBuildingImage" class="imageContainer"></div>
+    </div>
+
     <div class="loading">Underwriting</div>
     <button id="tryAgainButton" style="display: none;">Analyze another property</button>
 
