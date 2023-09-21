@@ -6,7 +6,7 @@ GOOGLE_API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc'
 METERS_IN_MILE = 1609.34
 
 # Rules:
-DEFAULT_RADIUS_IN_MILES = 1
+DEFAULT_RADIUS_IN_MILES = 1.1
 
 ####################################################################################################
 
