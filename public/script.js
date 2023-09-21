@@ -79,15 +79,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             resultContent += `
                 <div class="fade-in-line">By utilizing the Live Local Act, you could build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of <a href="${googleMapsURLTallest}" target="_blank">this building</a>, pictured above.</div>
-                <div class="fade-in-line"><br>Since <a href="${googleMapsURLInput}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, ${height}' becomes your effective height limit.</div>
-                <div class="fade-in-line"><br><br><br><u>debug:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
+                <div class="fade-in-line"><br>Since <a href="${googleMapsURLInput}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, <b>${height} feet</b> becomes your effective height limit here.</div>
             `;
         } else {
             resultContent += `
                 <div class="fade-in-line">By utilizing the Live Local Act, you can build as high as <b>${height} feet</b> here,</div>
                 <div class="fade-in-line">which is the height of the building at <a href="${googleMapsURLTallest}" target="_blank">${address}</a>, pictured above.</div>
-                <div class="fade-in-line"><br>Since <a href="${googleMapsURLInput}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, ${height}' becomes your effective height limit.</div>
-                <div class="fade-in-line"><br><br><br><u>debug:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
+                <div class="fade-in-line"><br>Since <a href="${googleMapsURLInput}" target="_blank">your property</a> is only <b>${distance} miles</b> away from it, <b>${height} feet</b> becomes your effective height limit here.</div>
             `;
         }
         
@@ -96,18 +94,23 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
                 <div class="fade-in-line">Worry not, though, because I just added this municipality to the list of supported cities & counties.</div>
                 <div class="fade-in-line"><br>Check back next week!</div>
-                <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         } else {
             resultContent += `
                 <div class="fade-in-line">The highest residential density allowed in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br><br><br></div>
             `;
         }
-    
+
+        // add some debug info to the readable HTML response
+        resultContent += `
+            <div class="fade-in-line"><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a><br><br><br><br>.</div>
+        `;
+
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
+        // Fade in the lines one by one
         let delay = 0;
         const fadeInLines = document.querySelectorAll('.fade-in-line');
         fadeInLines.forEach(line => {
