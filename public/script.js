@@ -68,7 +68,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="imageItem">
                     <div class="fade-in-line"><br><u><b><h3>Tallest Nearby</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Nearby Building"></a></div>
-                    <div class="fade-in-line">See the <a href="${googleMapsURLTallest}" target="_blank">tallest building</a> within a one-mile radius<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLTallest}" target="_blank">tallest building</a> within a mile<br><br></div>
                 </div>
             </div>
         `;
