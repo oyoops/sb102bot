@@ -77,21 +77,21 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         if (address === "- ") {
             resultContent += `
-                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line"><br>Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
-                <div class="fade-in-line"><br>Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         }
         
         if (!density || density <= 0) {
             resultContent += `
-                <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
+                <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
                 <div class="fade-in-line">Cheer up, though; I've just added your property to my list of municipalities to support in the future.</div>
-                <div class="fade-in-line"><br>Try again next week.</div>
+                <div class="fade-in-line">Check back next week.</div>
             `;
         } else {
             resultContent += `
@@ -125,7 +125,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     } catch (error) {
         console.error(error);
-        resultDiv.innerHTML = "Sorry, an error occurred. Try again later, maybe.";
+        resultDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
     }
 });
 
