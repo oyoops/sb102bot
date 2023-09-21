@@ -1,5 +1,25 @@
 const mainHeader = document.getElementById('mainHeader');
 
+async function reverseGeocode(lat, lng) {
+    const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
+    const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
+  
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      if (data.status === "OK") {
+        // Return the formatted address
+        return data.results[0].formatted_address; 
+      } else {
+        console.error("Geocoding error:", data.status);
+        return null;
+      }
+    } catch (error) {
+      console.error("Failed to reverse geocode:", error);
+      return null;
+    }
+  }
+
 document.getElementById('searchForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -41,9 +61,10 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             distance,
             building_name
         } = data;
-        
         const latitudeTallest = latitude;
         const longitudeTallest = longitude;
+
+        const tallestAddress = await reverseGeocode(latitudeTallest, longitudeTallest);
         
         //
         //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
@@ -71,11 +92,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             </div>
         `;
     
-        console.log("Tallest Bldg. Address: ", address)
+        console.log("Tallest Bldg. Address: ", tallestAddress)
 
-        if (address === "- ") {
+        if (tallestAddress === "- ") {
             resultContent += `
-                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the building located at <a href="${googleMapsURLTallest}" target="_blank">${tallestAddress}</a>, shown above.</div>
                 <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         } else {
@@ -119,28 +140,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
     }
 });
-
-
-async function reverseGeocode(lat, lng) {
-    const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
-    const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
-
-    try {
-        const response = await fetch(endpoint);
-        const data = await response.json();
-        if (data.status === "OK") {
-            // Return the formatted address
-            return data.results[0].formatted_address;
-        } else {
-            console.error("Geocoding error:", data.status);
-            return null;
-        }
-    } catch (error) {
-        console.error("Failed to reverse geocode:", error);
-        return null;
-    }
-}
-
 
 // Handle 'Try Again' button click
 document.getElementById('tryAgainButton').addEventListener('click', function() {

@@ -4,8 +4,9 @@ from density import get_density
 from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
 
 # Main wrapper-wrapper
+#    (NOT used in web server implementation; ONLY used in command line implementation)
 def main_script():
-    input_data = input("Please enter coordinates (lat,lon) or an address: ")
+    input_data = input("Please enter an address (or lat,long coords): ")
     result = get_building_height_from_input(input_data)
     print(result['result'])
 
@@ -120,8 +121,6 @@ def main(input_data):
     print(f" '--------------------------------------------------------------------------------'     \n\n")
     
     ##bldg_address = f"{bldg_info.get('Tags', {}).get('addr:housenumber', '-')} {bldg_info.get('Tags', {}).get('addr:street', '')}"
-
-
 
 
 
