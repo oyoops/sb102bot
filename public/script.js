@@ -77,12 +77,12 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         if (address === "- ") {
             resultContent += `
-                <div class="fade-in-line">By utilizing the <a href="https://google.com">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
+                <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
                 <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">By utilizing the L<a href="https://google.com">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
+                <div class="fade-in-line">By utilizing the L<a href="https://cresunshine.com/live-local-storm/">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> above.</div>
                 <div class="fade-in-line">Since the <a href="${googleMapsURLInput}" target="_blank">subject property</a> is only <b>${distance} miles</b> away, its effective height limit becomes <b>${height} feet</b>.</div>
             `;
         }
