@@ -52,22 +52,32 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const googleMapsURLTallest = `https://www.google.com/maps?q=${latitudeTallest},${longitudeTallest}`;
         const streetViewURLTallest = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitudeTallest},${longitudeTallest}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
         
-        let resultContent = (address === "- ") ? `
-            <div class="fade-in-line"><u><b><br></b></u></div>
-            <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
-            <div class="fade-in-line">which is as tall as this building at ${latitude}, ${longitude}:</div>
-            <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${latitude},${longitude}"></a></div>
-            <div class="fade-in-line">See it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
-            <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
-            <div class="fade-in-line">${density} | ${city} | ${county}</div>
-        ` : `
-            <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
-            <div class="fade-in-line">which is as tall as this building at ${address}:</div>
-            <div class="fade-in-line"><br><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${address}"></a></div>
-            <div class="fade-in-line">Find it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
-            <div class="fade-in-line"><br>Since your property is only ${distance} miles away, you're eligible to build up to this limit.</div>
-            <div class="fade-in-line"><br><br><br><i>Hope this helps, buddy!</i></div>
+        let resultContent = `
+            <div class="fade-in-line"><u><b>Your Input Address</b></u></div>
+            <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+            <div class="fade-in-line">See it on <a href="${googleMapsURLInput}" target="_blank">Google Maps</a></div>
+            <br>
+            <div class="fade-in-line"><u><b>Tallest Building Nearby</b></u></div>
         `;
+        
+        if (address === "- ") {
+            resultContent += `
+                <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
+                <div class="fade-in-line">which is as tall as this building at ${latitude}, ${longitude}:</div>
+                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${latitude},${longitude}"></a></div>
+                <div class="fade-in-line">See it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
+                <div class="fade-in-line">Your site is ${distance} miles away, so it qualifies.</div>
+                <div class="fade-in-line">${density} | ${city} | ${county}</div>
+            `;
+        } else {
+            resultContent += `
+                <div class="fade-in-line">By utilizing the Live Local Act here, you could build as high as <b>${height} feet</b>,</div>
+                <div class="fade-in-line">which is as tall as this building at ${address}:</div>
+                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of ${address}"></a></div>
+                <div class="fade-in-line">Find it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
+                <div class="fade-in-line">Since your property is only ${distance} miles away, you're eligible to build up to this limit.</div>
+            `;
+        }
         
         if (!density || density <= 0) {
             resultContent += `
@@ -81,7 +91,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line">The highest residential density in ${city !== '-' ? city : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.</div>
             `;
         }
-        
+    
         // Set the content of the result div
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
