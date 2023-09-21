@@ -42,22 +42,35 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             building_name
         } = data;
         
+        const latitudeTallest = latitude;
+        const longitudeTallest = longitude;
+        
+        
+        //
+        //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
+        //
+        // Show the input property in street view / google maps
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
         
-        // Assuming the tallest building's latitude and longitude are available
-        // (you'll need to replace these placeholder variables with the actual values from your data)
-        const latitudeTallest = latitude;
-        const longitudeTallest = longitude;
+        // Show tallest building within radius in street view / google maps
         const googleMapsURLTallest = `https://www.google.com/maps?q=${latitudeTallest},${longitudeTallest}`;
         const streetViewURLTallest = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitudeTallest},${longitudeTallest}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
+
         
         let resultContent = `
-            <div class="fade-in-line"><u><b>Your Input Address</b></u></div>
-            <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-            <div class="fade-in-line">See it on <a href="${googleMapsURLInput}" target="_blank">Google Maps</a></div>
-            <br>
-            <div class="fade-in-line"><u><b>Tallest Building Nearby</b></u></div>
+        <div class="image-container">
+            <div class="image-item">
+                <div class="fade-in-line"><u><b>Your Input Address</b></u></div>
+                <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                <div class="fade-in-line">See it on <a href="${googleMapsURLInput}" target="_blank">Google Maps</a></div>
+            </div>
+            <div class="image-item">
+                <div class="fade-in-line"><u><b>Tallest Building Nearby</b></u></div>
+                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Building"></a></div>
+                <div class="fade-in-line">See it on <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a></div>
+            </div>
+        </div>
         `;
         
         if (address === "- ") {
