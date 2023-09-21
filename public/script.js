@@ -40,7 +40,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     // Reset the result div content to the loading indicator
     try {
-        const response = await fetch('https://oyoops.com/api/building_height', {
+        const response = await fetch('https://sb102bot-gh.vercel.app/api/building_height', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
