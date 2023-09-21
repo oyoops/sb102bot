@@ -82,9 +82,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here.</div>
-                <div class="fade-in-line"><br>But don't cry -- I've just automatically added your municipality to my list of cities and counties to add.</div>
-                <div class="fade-in-line">Check again in a few days.</div>
-                <div class="fade-in-line"><br><br><br><br>[Debug information]:<br><br>city = ${city}<br>county = ${county}<br>density = ${density}<br><br></div>
+                <div class="fade-in-line">Worry not, though, because I just added this municipality to the list of supported cities & counties.</div>
+                <div class="fade-in-line"><br>Check back next week!</div>
+                <div class="fade-in-line"><br><br><br><br><u>debug info:</u><br> city = ${city} ... county = ${county} ... density = ${density}<br><br><br><br>Made by <a href="https://twitter.com/oyoops">@oyoops</a></div>
             `;
         } else {
             resultContent += `
