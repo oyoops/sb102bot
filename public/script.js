@@ -59,20 +59,20 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         
         let resultContent = `
-        <div class="image-container">
-            <div class="image-item">
-                <div class="fade-in-line"><br><u><b>Your Property</b></u></div>
-                <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                <div class="fade-in-line">See your property in <a href="${googleMapsURLInput}" target="_blank">Google Maps</a><br><br></div>
+            <div class="imageContainer">
+                <div class="imageItem">
+                    <div class="fade-in-line"><br><u><b>Your Property</b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                    <div class="fade-in-line">See your property in <a href="${googleMapsURLInput}" target="_blank">Google Maps</a><br><br></div>
+                </div>
+                <div class="imageItem">
+                    <div class="fade-in-line"><br><u><b>Tallest Building Nearby</b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Nearby Building"></a></div>
+                    <div class="fade-in-line">See the tallest nearby building in <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a><br><br></div>
+                </div>
             </div>
-            <div class="image-item">
-                <div class="fade-in-line"><br><u><b>Tallest Building Nearby</b></u></div>
-                <div class="fade-in-line"><a href="${googleMapsURLTallest}" target="_blank"><img src="${streetViewURLTallest}" alt="Google Street View of Tallest Nearby Building"></a></div>
-                <div class="fade-in-line">See the tallest nearby building in <a href="${googleMapsURLTallest}" target="_blank">Google Maps</a><br><br></div>
-            </div>
-        </div>
         `;
-        
+    
         console.log("Tallest Bldg. Address: ", address)
 
         if (address === "- ") {
