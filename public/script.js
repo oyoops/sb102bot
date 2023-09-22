@@ -118,11 +118,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
-                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of municipalities to add some day. <br>Check back next week.</div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of municipalities to add some day. Check back next week.<br></div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line"><br>The highest residential density allowed in ${tallestCity !== '-' ? tallestCity : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br></div>
+                <div class="fade-in-line"><br>The highest residential density allowed in ${tallestCity !== '-' ? tallestCity : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br><br></div>
             `;
         }
 
