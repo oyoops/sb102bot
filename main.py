@@ -11,7 +11,7 @@ def get_building_height_from_input(input_data):
     response = {"result": result}
     return response
 
-# TEST
+# TEST to eliminate main wrapper (called by api/building_height.py endpoint)
 def get_building_height_from_input2(input_data):
     # Get location object
     loc = Location(input_data)
@@ -47,8 +47,8 @@ def get_building_height_from_input2(input_data):
     print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
     print(f" '--------------------------------------------------------------------------------'\n\n")
     
-    # Return results
-    return {
+    # Collect results
+    result = {
         "height": tallest_building_details.get('height', 'Unknown'),
         "address": tallest_building_details.get('address', 'Unknown'),
         "latitude": tallest_building_details.get('latitude', 'Unknown'),
@@ -61,7 +61,12 @@ def get_building_height_from_input2(input_data):
         "location": loc
     }
 
+    # Return results dictionary
+    response = {"result": result}
+    return response
 
+
+# ---
 
 
 # Utility to get latitude and longitude
@@ -109,7 +114,11 @@ def get_tallest_building_details(buildings, building_obj):
         "building_name": tallest_bldg_name
     }
 
-# Main function
+
+# ---
+
+
+# Main script
 def main(input_data):
 
     # Get location object
@@ -159,6 +168,7 @@ def main(input_data):
         "building_name": tallest_building_details.get('name', 'Unknown'),
         "location": loc
     }
+
 
 # Script entry point
 if __name__ == '__main__':
