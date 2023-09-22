@@ -13,25 +13,42 @@ def get_desktop_path():
 # --- Main code starts here --- #
 
 # List of file names to combine
-file_names = ['main.py', 'api/building_height.py', 'location.py', 'building.py', 
-              'constants.py', 'utilities.py', 'density.py', 'public/index.html', 'public/script.js']
+file_names = ['main.py', 
+              'public/script.js', 'public/index.html', 'public/style.css',
+              'location.py', 'building.py',
+              'constants.py', 'utilities.py', 'density.py',
+              'api/building_height.py', 'api/site_lookup.py']
 
-# Output zip file name
-zip_file_name = 'combined_code.zip'
+# Output file names
+zip_file_name = 'combined_code.zip' # Output zip file name
+txt_file_name = 'combined_code.txt' # Output text file name
 
-# Full path to the output zip file on the Desktop
+# Full path to the output files on the Desktop
 desktop_path = get_desktop_path()  # Get Desktop path
 full_zip_path = os.path.join(desktop_path, zip_file_name)
+full_txt_path = os.path.join(desktop_path, txt_file_name)
 
 # Initialize the zip file
 try:
     with zipfile.ZipFile(full_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for file_name in file_names:
-            try:
-                # Add the file to the zip archive
-                zipf.write(file_name, os.path.basename(file_name))
-            except FileNotFoundError:
-                print(f"{file_name} not found, skipping.")
+        # Initialize the text file to store combined contents
+        with open(full_txt_path, 'w', encoding='utf-8') as txtf:
+            for file_name in file_names:
+                try:
+                    # Add the file to the zip archive
+                    zipf.write(file_name, os.path.basename(file_name))
+                    
+                    # Add the content of the file to the text file
+                    with open(file_name, 'r', encoding='utf-8', errors='replace') as input_file:
+                        content = input_file.read()
+                        txtf.write(f"### File: {file_name}\\n")
+                        txtf.write(content)
+                        txtf.write("\\n--------------------------------------------------\\n")
+                        
+                except FileNotFoundError:
+                    print(f"{file_name} not found, skipping.")
+                    txtf.write(f"// {file_name} not found.\\n")
     print(f"Zipped files into {full_zip_path}")
+    print(f"Combined files into {full_txt_path}")
 except Exception as e:
-    print(f"Could not create the zip file. Error: {e}")
+    print(f"Could not create the files. Error: {e}")
