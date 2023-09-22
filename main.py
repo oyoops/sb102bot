@@ -3,16 +3,8 @@ from building import Building
 from density import get_density
 from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
 
-# Main wrapper (called by api/building_height.py endpoint)
+# "Main" function of the /building_height endpoint
 def get_building_height_from_input(input_data):
-    if not input_data:
-        return {"error": "Invalid input data."}
-    result = main(input_data)
-    response = {"result": result}
-    return response
-
-# TEST to eliminate main wrapper (called by api/building_height.py endpoint)
-def get_building_height_from_input2(input_data):
     # Get location object
     loc = Location(input_data)
     lat, lon = get_location_coordinates(input_data, loc)

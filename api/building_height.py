@@ -1,4 +1,4 @@
-from main import get_building_height_from_input2
+from main import get_building_height_from_input
 from density import get_density, density_data
 from location import Location
 from http.server import BaseHTTPRequestHandler
@@ -6,8 +6,7 @@ import json
 
 ###  This setup allows you to send a POST request
 ###  to https://sb102bot/api/building_height
-###  to execute the get_building_height_from_input function.
-
+###  to execute get_building_height_from_input.
 
 class handler(BaseHTTPRequestHandler):
 
@@ -29,7 +28,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_cors_headers()
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write(str("Send a POST request with an address to get the building height.").encode())
+        self.wfile.write(str("Send a POST request with an address to get the tallest building height within a 1-mile radius.").encode())
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -37,7 +36,7 @@ class handler(BaseHTTPRequestHandler):
         input_data = post_data.decode("utf-8")
 
         # Get the results for the given location
-        result = get_building_height_from_input2(input_data)
+        result = get_building_height_from_input(input_data)
         loc = result['result'].get('location', None)
 
         # Get the city and county from the Location object
