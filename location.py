@@ -1,6 +1,11 @@
 import requests
 import math
+import logging
+
 from constants import GOOGLE_API_KEY
+
+# Initialize logging
+logging.basicConfig(level=logging.DEBUG)
 
 class Location:
 
@@ -10,6 +15,7 @@ class Location:
         self.longitude = None
 
     def geocode_address(self):
+        logging.debug("Geocoding address.")
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
         params = {
             'address': self.input_data,
@@ -19,27 +25,17 @@ class Location:
         data = response.json()
 
         if data['status'] != 'OK':
+            logging.error(f"Error geocoding address: {data}")
             raise ValueError("Error geocoding address. Check the address and try again.")
+        
         self.latitude = data['results'][0]['geometry']['location']['lat']
         self.longitude = data['results'][0]['geometry']['location']['lng']
+        logging.debug(f"Latitude: {self.latitude}, Longitude: {self.longitude}")
 
         return self.latitude, self.longitude
 
-    def reverse_geocode_coordinates(self):
-        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
-        params = {
-            'latlng': f"{self.latitude},{self.longitude}",
-            'key': GOOGLE_API_KEY
-        }
-        response = requests.get(base_url, params=params)
-        data = response.json()
-
-        if data['status'] != 'OK':
-            raise ValueError("Error reverse geocoding coordinates.")
-        
-        return data['results'][0]['formatted_address']
-
     def get_city_and_county(self):
+        logging.debug("Fetching city and county using Google Maps API.")
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
         params = {
             'latlng': f"{self.latitude},{self.longitude}",
@@ -47,29 +43,24 @@ class Location:
         }
         response = requests.get(base_url, params=params)
         data = response.json()
-
+        
         if data['status'] != 'OK':
+            logging.error(f"Error fetching city and county: {data}")
             raise ValueError("Error fetching city and county.")
         
         city = None
         county = None
+        for result in data['results']:
+            for component in result['address_components']:
+                if 'locality' in component['types']:
+                    city = component['long_name']
+                if 'administrative_area_level_2' in component['types']:
+                    county = component['long_name']
         
-        for component in data['results'][0]['address_components']:
-            if "locality" in component['types']:
-                city = component['long_name']
-            elif "administrative_area_level_2" in component['types']:
-                county = component['long_name']
-        
-        return city, county
+        if city is None or county is None:
+            logging.error("Could not find city or county.")
+            raise ValueError("Could not find city or county.")
 
-    @staticmethod
-    def haversine_distance(lat1, lon1, lat2, lon2):
-        lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
-        dlat = lat2 - lat1
-        dlon = lon2 - lon1
-        a = (math.sin(dlat/2)**2 + 
-             math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2)
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        distance = 6371 * c
-        return distance * 0.621371
-    
+        logging.debug(f"Extracted City: {city}, Extracted County: {county}")
+
+        return city, county
