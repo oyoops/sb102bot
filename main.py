@@ -48,7 +48,7 @@ def get_tallest_building_details(buildings, building_obj):
     distance = round(distance, 2) if distance else None
     
     return {
-        "height": int(tallest_building['height']),
+        "height": int(round(float(tallest_building['height']))),
         "address": tallest_bldg_address,
         "latitude": tallest_building_lat,
         "longitude": tallest_building_lon,
