@@ -1,4 +1,4 @@
-from main import get_building_height_from_input
+from main import get_building_height_from_input2
 from density import get_density, density_data
 from location import Location
 from http.server import BaseHTTPRequestHandler
@@ -37,7 +37,7 @@ class handler(BaseHTTPRequestHandler):
         input_data = post_data.decode("utf-8")
 
         # Get the results for the given location
-        result = get_building_height_from_input(input_data)
+        result = get_building_height_from_input2(input_data)
         loc = result['result'].get('location', None)
 
         # Get the city and county from the Location object
