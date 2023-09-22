@@ -25,40 +25,42 @@ class Location:
 
         return self.latitude, self.longitude
 
-    def get_city_and_county(self):
-        overpass_url = "https://overpass-api.de/api/interpreter"
-        
-        query = f"""
-        [out:json];
-        (
-            is_in({self.latitude}, {self.longitude});
-            area._[boundary=administrative][admin_level~"[68]"];
-        );
-        out tags;
-        """
-        
-        response = requests.get(overpass_url, params={'data': query})
+    def reverse_geocode_coordinates(self):
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            'latlng': f"{self.latitude},{self.longitude}",
+            'key': GOOGLE_API_KEY
+        }
+        response = requests.get(base_url, params=params)
         data = response.json()
+
+        if data['status'] != 'OK':
+            raise ValueError("Error reverse geocoding coordinates.")
         
-        # Printing the entire data from Overpass API
-        print("Overpass API Data:", data)
+        return data['results'][0]['formatted_address']
+
+    def get_city_and_county(self):
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            'latlng': f"{self.latitude},{self.longitude}",
+            'key': GOOGLE_API_KEY
+        }
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            raise ValueError("Error fetching city and county.")
         
         city = None
         county = None
-
-        for element in data['elements']:
-            if 'tags' in element:
-                if 'admin_level' in element['tags'] and element['tags']['admin_level'] == '6':
-                    county = element['tags'].get('name', None)
-                elif 'admin_level' in element['tags'] and element['tags']['admin_level'] == '8':
-                    city = element['tags'].get('name', None)
-
-        # Printing the final city and county values
-        print("Extracted City:", city)
-        print("Extracted County:", county)
-                    
+        
+        for component in data['results'][0]['address_components']:
+            if "locality" in component['types']:
+                city = component['long_name']
+            elif "administrative_area_level_2" in component['types']:
+                county = component['long_name']
+        
         return city, county
-    
 
     @staticmethod
     def haversine_distance(lat1, lon1, lat2, lon2):
@@ -70,4 +72,4 @@ class Location:
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
         distance = 6371 * c
         return distance * 0.621371
-
+    
