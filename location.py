@@ -1,9 +1,10 @@
+from constants import GOOGLE_API_KEY
+import utilities
 import requests
 import math
 import logging
-import utilities
+import json
 
-from constants import GOOGLE_API_KEY
 
 # Initialize logging
 logging.basicConfig(level=logging.DEBUG)
@@ -70,6 +71,29 @@ class Location:
         logging.debug(f"Extracted City: {city}, Extracted County: {county}")
 
         return city, county
+
+    def get_walkability_score(self):
+        API_KEY = GOOGLE_API_KEY
+        types = ['grocery_or_supermarket', 'park', 'school', 'transit_station']
+        score = 0
+        
+        for amenity_type in types:
+            endpoint = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={self.latitude},{self.longitude}&radius=1000&type={amenity_type}&key={API_KEY}"
+            
+            try:
+                response = requests.get(endpoint)
+                data = json.loads(response.text)
+                
+                if data['status'] == 'OK' and len(data['results']) > 0:
+                    # THIS IS A LAUGHABLY STUPID METHOD TO CALCULATE A "WALKABILITY SCORE"
+                    score += 25  # Increment score for each amenity type found within 1km
+                    print(f"Found {amenity_type} within 1km of {self.latitude}, {self.longitude}")
+
+            except Exception as e:
+                print(f"Failed to fetch nearby places: {e}")
+                
+        return score
+    
 
     @staticmethod
     def haversine_distance(lat1, lon1, lat2, lon2):
