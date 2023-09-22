@@ -36,6 +36,11 @@ class Location:
 
     def get_city_and_county(self):
         logging.debug("Fetching city and county using Google Maps API.")
+        
+        if self.latitude is None or self.longitude is None:
+            logging.error("Latitude and/or longitude have not been set.")
+            raise ValueError("Latitude and/or longitude have not been set.")
+        
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
         params = {
             'latlng': f"{self.latitude},{self.longitude}",
@@ -43,11 +48,11 @@ class Location:
         }
         response = requests.get(base_url, params=params)
         data = response.json()
-        
+
         if data['status'] != 'OK':
             logging.error(f"Error fetching city and county: {data}")
             raise ValueError("Error fetching city and county.")
-        
+                
         city = None
         county = None
         for result in data['results']:
