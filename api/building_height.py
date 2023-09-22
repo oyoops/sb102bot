@@ -36,14 +36,31 @@ class handler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         input_data = post_data.decode("utf-8")
 
-        # Extract city and county from the location
-        loc = Location(input_data)
-        city, county = loc.get_city_and_county()
+        # Get the results for the given location
+        result = get_building_height_from_input(input_data)
+        loc = result['result'].get('location', None)
 
+        # Get the city and county from the Location object
+        if loc:
+            city, county = loc.get_city_and_county()
+        else:
+            city, county = None, None
         # Print city and county values after they are determined
         print("City:", city)
         print("County:", county)
         
+        ## Clean data:
+
+        # Fix building name if it is '-' or missing
+        building_name = result["result"].get("name", None)
+        if not building_name or building_name == "-":
+            building_name = "Unknown"
+        # Round the distance to 2 decimal places
+        distance = result["result"].get("distance", None)
+        if distance is not None:
+            distance = round(distance, 2)
+
+        #####################################################################################################
         # Determine density value based on city or county or default to 0
         if city:
             density_value = get_density(city)
@@ -51,32 +68,17 @@ class handler(BaseHTTPRequestHandler):
             density_value = get_density(county)
         else:
             density_value = 0
-
         # Print the determined density value
         print("Max density in municipality: ", density_value, "units/ac.")
+        #####################################################################################################
 
-        # Get the building height for the given location
-        result = get_building_height_from_input(input_data)
-
-        ### (debug) print the JSON being sent to client
-        print(result)
-
-        # Fix building name if it is '-' or missing
-        building_name = result["result"].get("name", None)
-        if not building_name or building_name == "-":
-            building_name = "Unknown"
-
-        # Round the distance to 2 decimal places
-        distance = result["result"].get("distance", None)
-        if distance is not None:
-            distance = round(distance, 2)
-
-        # Send the response
+        # Set headers
         self.send_response(200)
         self.send_cors_headers()
         self.send_header('Content-type', 'application/json')
         self.end_headers()
         
+        # Compose the response
         response = {
             "height": result["result"].get("height", None),
             "address": result["result"].get("address", None),
@@ -89,4 +91,5 @@ class handler(BaseHTTPRequestHandler):
             "building_name": building_name
         }
 
+        # Send the response
         self.wfile.write(json.dumps(response).encode())

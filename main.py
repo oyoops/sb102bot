@@ -3,13 +3,6 @@ from building import Building
 from density import get_density
 from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
 
-# Main wrapper-wrapper
-#    (NOT used in web server implementation; ONLY used in command line implementation)
-def main_script():
-    input_data = input("Please enter an address (or lat,long coords): ")
-    result = get_building_height_from_input(input_data)
-    print(result['result'])
-
 # Main wrapper
 def get_building_height_from_input(input_data):
     if not input_data:
@@ -156,7 +149,6 @@ def main(input_data):
         # If neither geometry nor exact coordinates are available, set to None
         tallest_building_lat = None
         tallest_building_lon = None
-    
 
 
     # Calculate distance between subject site and the tallest building, if possible
@@ -171,6 +163,7 @@ def main(input_data):
 
     # Return the necessary info
     return {
+        "location": loc, # the object itself
         "height": int(tallest_building['height']),
         "address": tallest_bldg_address,
         "latitude": tallest_building_lat,
@@ -181,6 +174,14 @@ def main(input_data):
         "distance": distance,
         "building_name": tallest_bldg_name
     }
+
+##########################################################################################
+
+# Wrapper of the wrapper of main
+def main_script():
+    input_data = input("Please enter an address (or lat,long coords): ")
+    result = get_building_height_from_input(input_data)
+    print(result['result'])
 
 ##########################################################################################
 

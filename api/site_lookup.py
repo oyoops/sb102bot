@@ -39,19 +39,30 @@ class handler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         input_data = post_data.decode("utf-8")
 
-        # Get location object from user input
-        loc = Location(input_data)
+        # Get the location data for the given location
+        result = run_site_lookup_from_input(input_data)
+        loc = result['result'].get('location', None)
 
-
-        #####################################################################################################
-        # Extract city and county from the location
-        city, county = loc.get_city_and_county()
+        # Get the city and county from the Location object
+        if loc:
+            city, county = loc.get_city_and_county()
+        else:
+            city, county = None, None
         # Print city and county values after they are determined
         print("City:", city)
         print("County:", county)
-        #####################################################################################################
-        #                                                                                                    #
-        #                                                                                                    #
+
+        ## Clean data:
+
+        # Fix building name if it is '-' or missing
+        building_name = result["result"].get("name", None)
+        if not building_name or building_name == "-":
+            building_name = "Unknown"
+        # Round the distance to 2 decimal places
+        distance = result["result"].get("distance", None)
+        if distance is not None:
+            distance = round(distance, 2)
+
         #####################################################################################################
         # Determine density value based on city or county, or 0 if neither exists in our density database
         if city:
@@ -64,23 +75,6 @@ class handler(BaseHTTPRequestHandler):
         print("Max density in municipality: ", density_value, "units/ac.")
         #####################################################################################################
 
-        # Get the location data for the given location
-        result = run_site_lookup_from_input(input_data)
-        # print the JSON that's about to be sent to the client
-        print(result)
-
-        ## data cleaning:
-
-        # Fix building name if it is '-' or missing
-        building_name = result["result"].get("name", None)
-        if not building_name or building_name == "-":
-            building_name = "Unknown"
-        # Round the distance to 2 decimal places
-        distance = result["result"].get("distance", None)
-        if distance is not None:
-            distance = round(distance, 2)
-
-        ## Send response to client
 
         # Set headers
         self.send_response(200)
