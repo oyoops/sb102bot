@@ -80,4 +80,5 @@ class Location:
             * math.cos(math.radians(lat2)) * math.sin(dlon / 2) * math.sin(dlon / 2)
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         distance = R * c
+        distance = distance * 0.621371 # Convert to miles
         return distance
