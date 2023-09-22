@@ -69,7 +69,7 @@ class handler(BaseHTTPRequestHandler):
         else:
             density_value = 0
         # Print the determined density value
-        print("Max density in municipality: ", density_value, "units/ac.")
+        print("Max density in this municipality: ", density_value, "units/ac.")
         #####################################################################################################
 
         # Set headers
@@ -80,15 +80,16 @@ class handler(BaseHTTPRequestHandler):
         
         # Compose the response
         response = {
-            "height": result["result"].get("height", None),
+            "building_name": result["result"].get("name", None),
             "address": result["result"].get("address", None),
             "latitude": result["result"].get("latitude", None),
             "longitude": result["result"].get("longitude", None),
-            "city": city or "-",
-            "county": county or "-",
-            "density": density_value,
-            "distance": distance,
-            "building_name": building_name
+            "county": result["result"].get("county", None),
+            "city": result["result"].get("city", None),
+            "distance": result["result"].get("distance", None),
+            "height": result["result"].get("height", None),
+            "density": result["result"].get("density", None),
+            "walkscore": result["result"].get("walkscore", None),
         }
 
         # Send the response
