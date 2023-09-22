@@ -78,16 +78,16 @@ def main(input_data):
     max_density = get_density(city) if city else get_density(county)
     
     return {
-        "location": loc,
-        "height": tallest_building_details['height'],
-        "address": tallest_building_details['address'],
-        "latitude": tallest_building_details['latitude'],
-        "longitude": tallest_building_details['longitude'],
+        "height": tallest_building_details.get('height', 'Unknown'),
+        "address": tallest_building_details.get('address', 'Unknown'),
+        "latitude": tallest_building_details.get('latitude', 'Unknown'),
+        "longitude": tallest_building_details.get('longitude', 'Unknown'),
         "city": city,
         "county": county,
         "density": max_density,
-        "distance": tallest_building_details['distance'],
-        "building_name": tallest_building_details['name']
+        "distance": tallest_building_details.get('distance', 'Unknown'),
+        "building_name": tallest_building_details.get('name', 'Unknown'),
+        "location": loc
     }
 
 # Script entry point
