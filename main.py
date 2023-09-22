@@ -37,10 +37,14 @@ def main(input_data):
         print("    ***********\n   **  ERROR  **   Failed to locate subject site...\n    ***********    Using example coordinates instead.")
         lat, lon = 26.032865, -80.114964  # Example: Villas of Positano (along north Broadwalk in Hollywood Beach)
 
+    # Update the loc object's latitude and longitude
+    loc.latitude = lat
+    loc.longitude = lon
+
     # Print the location of the subject property
     print(f"\nSUBJECT PROPERTY:")
     print(f"      Lat/Long:    {round(float(lat),5)}, {round(float(lon),5)}")    
-
+    # Get the city and county
     city, county = loc.get_city_and_county()
     if city:
         print(f"      City:        {city}")
