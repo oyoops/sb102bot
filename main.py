@@ -24,11 +24,13 @@ def main(input_data):
     
     loc = Location(input_data)
     
-    # Check if input_data is in the format of a COORDINATE PAIR or an ADDRESS
+    # Check whether input_data is in the format of a COORDINATE PAIR or an ADDRESS
     try:
         lat, lon = map(float, input_data.split(','))
+        print(f"Input Lat/Long:    {round(float(lat),5)}, {round(float(lon),5)}") 
     except ValueError:
         lat, lon = loc.geocode_address()
+        print(f"Geocoded Lat/Long:    {round(float(lat),5)}, {round(float(lon),5)}")
     
     # If both input verification checks fail to yield a subject location, then ignore/override user input, use default coordinates
     if lat is None or lon is None:
