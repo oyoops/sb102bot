@@ -105,13 +105,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             // this may be obsolete
             resultContent += `
             <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the <a href="${googleMapsURLTallest}" target="_blank">building</a> shown above.</div>
-                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+                <div class="fade-in-line"><br>Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         } else {
             // this may always trigger
             resultContent += `
                 <div class="fade-in-line">By utilizing the <a href="https://cresunshine.com/live-local-storm/" target="_blank">Live Local Act</a>, you can build up to the height of the building located at <a href="${googleMapsURLTallest}" target="_blank">${tallestAddress}</a>, shown above.</div>
-                <div class="fade-in-line">Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
+                <div class="fade-in-line"><br>Your <a href="${googleMapsURLInput}" target="_blank">property</a> is only <b>${distance} miles</b> away, so the height limit here would be <b>${height} feet</b>.</div>
             `;
         }
         
@@ -122,7 +122,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line">The highest residential density allowed in ${tallestCity !== '-' ? tallestCity : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br><br></div>
+                <div class="fade-in-line"><br>The highest residential density allowed in ${tallestCity !== '-' ? tallestCity : county} is ${density} units per acre, so a Live Local-qualified development at this location would be able to match that.<br></div>
             `;
         }
 
