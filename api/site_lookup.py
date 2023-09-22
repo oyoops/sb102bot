@@ -1,5 +1,6 @@
 from main import run_site_lookup_from_input
 from density import get_density, density_data
+from utilities import haversine_distance
 from location import Location
 from http.server import BaseHTTPRequestHandler
 import json

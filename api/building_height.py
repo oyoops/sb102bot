@@ -1,6 +1,7 @@
 from main import get_building_height_from_input
 from density import get_density, density_data
 from location import Location
+from utilities import haversine_distance
 from http.server import BaseHTTPRequestHandler
 import json
 
