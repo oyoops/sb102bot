@@ -65,7 +65,13 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const latitudeTallest = latitude;
         const longitudeTallest = longitude;
 
+        // Reverse geocode the tallest building
+        // 
+        //  WHY AM I DOING THIS HERE??
+        //  SHOULD BE DONE SERVERSIDE
+        //
         const tallestBuilding = await reverseGeocode(latitudeTallest, longitudeTallest);
+
         const tallestStreetNumber = tallestBuilding.address_components.find(c => c.types[0] === 'street_number')?.short_name;
         const tallestStreetName = tallestBuilding.address_components.find(c => c.types[0] === 'route')?.short_name;
         const tallestCity = tallestBuilding.address_components.find(c => c.types[0] === 'locality')?.short_name;
@@ -74,9 +80,10 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const tallestAddress = `${tallestStreetNumber ? tallestStreetNumber + ' ' : ''}${tallestStreetName ? tallestStreetName + ', ' : ''}${tallestCity ? tallestCity + ', ' : ''}${tallestState ? tallestState + ' ' : ''}${tallestZip ? tallestZip : ''}`;
 
         //
-        //   !!!    THIS IS INCORRECT... AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
+        //   THIS IS INCORRECT !!!
+        //   AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
         //
-        // Show the input property in street view / google maps
+        // Show the input property in Street View / Google Maps
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
         

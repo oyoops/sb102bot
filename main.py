@@ -58,25 +58,42 @@ def get_tallest_building_details(buildings, building_obj):
 
 # Main function
 def main(input_data):
-    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
+
+    # Get location object
     loc = Location(input_data)
     lat, lon = get_location_coordinates(input_data, loc)
+    city, county = loc.get_city_and_county()
+
+    # Get building object
+    building_obj = Building(lat, lon)
+
+    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
     print(f"\nSUBJECT PROPERTY:")
     print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
-    city, county = loc.get_city_and_county()
     print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
-    building_obj = Building(lat, lon)
+
+    # Get top buildings
     top_buildings = get_top_buildings(building_obj)
     print_top_buildings(top_buildings, building_obj)
+
+    # Get approx. stories
     tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
+    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
+    print(f"Approx. stories: {approx_stories}")
+
+    # Get walkability score
     walkability_score = loc.get_walkability_score()
     print(f"\nWalkability Score: {walkability_score}")
-    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
+
+    # Get max density in municipality
+    max_density = get_density(city) if city else get_density(county)
+    
+    # Log results
     print(f"\n .--------------------------------------------------------------------------------.")
     print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
     print(f" '--------------------------------------------------------------------------------'\n\n")
-    max_density = get_density(city) if city else get_density(county)
     
+    # Return results
     return {
         "height": tallest_building_details.get('height', 'Unknown'),
         "address": tallest_building_details.get('address', 'Unknown'),
