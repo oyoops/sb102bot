@@ -204,6 +204,16 @@ img {
 }
 
 #tryAgainButton {
-    position: relative;  /* Fix position */
-    z-index: 1;
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    background-color: #afc6ed;
+    color: #333;
+    z-index: auto;
+}
+
+.unitCalculationText {
+    font-weight: 300;
+    color: #666;
 }

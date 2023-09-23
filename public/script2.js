@@ -186,6 +186,7 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     window.scrollTo(0, 0);
 });
 
+
 // Fade in the input box upon page load (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
      // slight delay (100 ms) to ensure styles are applied after load
@@ -213,12 +214,17 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const resultDiv = document.getElementById('unitCalculationResult');
     resultDiv.innerHTML = "";
 
+    // Create a single cohesive sentence
     const cohesiveSentenceElem = document.createElement('p');
-    cohesiveSentenceElem.className = 'fade-in-line';
-    cohesiveSentenceElem.textContent = `Based on an acreage of ${acreage}, you can build approximately ${totalUnits} total units, which would consist of ${affordableUnits} affordable units and ${marketRateUnits} market rate units.`;
+    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
 
+    // Apply the 'fade-in-line' class for the fade-in effect
+    cohesiveSentenceElem.className = 'fade-in-line';
+
+    // Append the sentence to the result div
     resultDiv.appendChild(cohesiveSentenceElem);
 
+    // Apply the fade-in effect
     setTimeout(() => {
         cohesiveSentenceElem.style.opacity = '1';
     }, 500);
