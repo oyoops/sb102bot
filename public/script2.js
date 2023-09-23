@@ -220,7 +220,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     totalUnitsElem.textContent = `Total Units      : ${totalUnits}`;
     affordableUnitsElem.textContent = `Affordable Units : ${affordableUnits}`;
-    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}`;
+    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}<br><br><br><br>`;
 
     [totalUnitsElem, affordableUnitsElem, marketRateUnitsElem].forEach((elem, index) => {
         elem.className = 'fade-in-line';
