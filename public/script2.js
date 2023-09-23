@@ -74,15 +74,15 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         console.log("Address components: ", inputLocationClean.address_components);
 
         // Use the cleaned Location object to get the details we need
-        const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
+        const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short_name
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
         const inputCity = inputLocationClean.address_components.find(c => c.types[0] === 'locality')?.short_name
         const inputCounty = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_2')?.short_name
         const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
         const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
         // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
-        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}`;
-        console.log("Constructed address: ", inputAddressConstructed); // from custom reconstruction
+        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber + ' ' : ''}${inputStreetName ? inputStreetName + ', ': ''}${inputCity ? inputCity + '': ''}`;
+        console.log("Constructed address:", inputAddressConstructed); // from custom reconstruction
 
         //   .--------------------------------------,
         //   |    Prepare assets for response      /
@@ -116,8 +116,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // MAXIMUM MUNICIPAL DENSITY LOOKUP:
         if (!density || density <= 0) {
             resultContent += `
-                <div class="fade-in-line"><br>Unfortunately, I don't know the maximum residential density here...</div>
-                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of municipalities to add some day. Check back next week!<br></div>
+                <div class="fade-in-line"><br>Unfortunately, I don't know ${inputCity !== '-' ? inputCity : inputCounty}'s maximum residential density.<br>This info is necessary for coming up with a unit count.</div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?<br></div>
             `;
         } else {
             resultContent += `
