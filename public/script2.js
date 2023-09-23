@@ -121,7 +121,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line"><br>The highest residential density allowed in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units per acre, so a Live Local-qualified development on this property would be able to match that.<br><br><br></div>
+                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.<br><br><br></div>
             `;
         }
         
