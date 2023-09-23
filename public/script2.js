@@ -1,4 +1,5 @@
 const mainHeader = document.getElementById('mainHeader');
+let globalDensity = density; // global variable to store the density value for later use in the unit calculations
 
 async function reverseGeocode(lat, lng) {
     const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
@@ -61,9 +62,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         //  | ^--+-- WILL THIS BREAK IF IT IS NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE??
         //  '****'
 
-        // Declare a global variable to store the density value
-        let globalDensity = density;
-        
+        // Set the globalDensity variable to the density from the response
+        globalDensity = density;        
 
         //   .--------------------------------------,
         //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
