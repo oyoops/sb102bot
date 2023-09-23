@@ -92,6 +92,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
         // Street View image URL:
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
+        // Satellite image URL:
+        const satelliteURLInput = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=18&size=600x300&maptype=satellite&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
 
         //   .--------------------------------------,
         //   |  Construct the complete response    /
@@ -102,7 +104,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             <div class="imageContainer">
                 <div class="imageItem">
                     <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
-                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${satelliteURLInput}" alt="Google Satellite View of Your Input Address"></a></div>
                     <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
                 <div class="imageItem">
