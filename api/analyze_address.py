@@ -139,14 +139,14 @@ def get_address_analysis(userInputAddress):
     print(f" |   Walkability  | {walkability_score}")
     print(f" '----------------^---------------------------'\n")
     
-    ### ATTEMPT POSTGRESQL CONNECTION
+    ##### ATTEMPT POSTGRESQL CONNECTION
     conn = connect_to_database()
-    if (conn):
+    if conn:
         print("Connected to the PostgreSQL database  :-)")
         conn.close()
     else:
         print("FAILED to connect to the PostgreSQL database  :'-(")
-    ###
+    #####
 
     # Compose result dictionary
     result = {
@@ -165,6 +165,7 @@ def get_address_analysis(userInputAddress):
 
 # Connect to the PostGRESQL database
 def connect_to_database():
+    conn = None
     try:
         conn = psycopg2.connect(
             host="45.82.75.6",
@@ -177,6 +178,4 @@ def connect_to_database():
     except Exception as e:
         print("Unable to connect to the database.")
         print(e)
-        
-    # Return result dictionary
     return conn
