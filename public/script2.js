@@ -60,7 +60,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         //  .****.
         //  | ^--+-- WILL THIS BREAK IF IT IS NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE??
         //  '****'
+
+        // Declare a global variable to store the density value
+        let globalDensity = density;
         
+
         //   .--------------------------------------,
         //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
         //   '------------------------------------'
@@ -201,8 +205,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         return;
     }
 
-    // Assuming you have density stored in a variable named 'density'
-    const totalUnits = Math.floor(acreage * density);
+    const totalUnits = Math.floor(acreage * globalDensity); // Use the globalDensity variable
     const affordableUnits = Math.ceil(totalUnits * 0.4);
     const marketRateUnits = totalUnits - affordableUnits;
 
@@ -215,8 +218,8 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const affordableUnitsElem = document.createElement('p');
     const marketRateUnitsElem = document.createElement('p');
 
-    totalUnitsElem.textContent = `Total Units: ${totalUnits}`;
-    affordableUnitsElem.textContent = `Affordable Units: ${affordableUnits}`;
+    totalUnitsElem.textContent = `Total Units      : ${totalUnits}`;
+    affordableUnitsElem.textContent = `Affordable Units : ${affordableUnits}`;
     marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}`;
 
     [totalUnitsElem, affordableUnitsElem, marketRateUnitsElem].forEach((elem, index) => {
