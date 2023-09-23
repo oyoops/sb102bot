@@ -150,6 +150,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
 
+        // Show the acreage input section after analysis is complete
+        document.getElementById('acreageSection').style.display = 'block';
+
+        // Scroll to the top of the page
+        window.scrollTo(0, 0); // ???
+
+        // 
+
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
         resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
@@ -174,40 +182,6 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     window.scrollTo(0, 0);
 });
 
-// Add event listener to the "Calculate Units" button
-document.getElementById('calculateUnitsButton').addEventListener('click', function() {
-    // Get the acreage value from the input field
-    const acreageValue = parseFloat(document.getElementById('acreageInput').value);
-
-    // Perform the calculations
-    const totalUnits = Math.floor(acreageValue * density);
-    const affordableUnits = Math.ceil(totalUnits * 0.4);
-    const marketRateUnits = totalUnits - affordableUnits;
-
-    // Prepare the HTML to display the results
-    let resultContent = `
-        <div class="fade-in-line">Total Units: ${totalUnits}</div>
-        <div class="fade-in-line">Affordable Units: ${affordableUnits}</div>
-        <div class="fade-in-line">Market Rate Units: ${marketRateUnits}</div>
-    `;
-
-    // Display the results in the div with id="unitCalculationResult"
-    const unitCalculationResultDiv = document.getElementById('unitCalculationResult');
-    unitCalculationResultDiv.innerHTML = resultContent;
-    
-    // Fade the response in line-by-line
-    let delayPerLine = 500; // milliseconds
-    let delay = 0;
-    const fadeInLines = unitCalculationResultDiv.querySelectorAll('.fade-in-line');
-    fadeInLines.forEach(line => {
-        setTimeout(() => {
-            line.style.opacity = '1';
-        }, delay);
-        delay += delayPerLine;
-    });
-});
-
-
 // Fade in the input box upon page load (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
      // slight delay (100 ms) to ensure styles are applied after load
@@ -216,4 +190,40 @@ window.addEventListener('load', () => {
         input.style.opacity = 1;
         input.style.transform = 'translateY(0)';
     }, 100);
+});
+
+
+// Event listener for the Calculate Units button
+document.getElementById('calculateUnitsButton').addEventListener('click', function() {
+    const acreage = parseFloat(document.getElementById('acreageInput').value);
+    if (isNaN(acreage)) {
+        alert("Please enter a valid acreage.");
+        return;
+    }
+
+    // Assuming you have density stored in a variable named 'density'
+    const totalUnits = Math.floor(acreage * density);
+    const affordableUnits = Math.ceil(totalUnits * 0.4);
+    const marketRateUnits = totalUnits - affordableUnits;
+
+    // Clear previous results if any
+    const resultDiv = document.getElementById('unitCalculationResult');
+    resultDiv.innerHTML = "";
+
+    // Create elements to display the results
+    const totalUnitsElem = document.createElement('p');
+    const affordableUnitsElem = document.createElement('p');
+    const marketRateUnitsElem = document.createElement('p');
+
+    totalUnitsElem.textContent = `Total Units: ${totalUnits}`;
+    affordableUnitsElem.textContent = `Affordable Units: ${affordableUnits}`;
+    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}`;
+
+    [totalUnitsElem, affordableUnitsElem, marketRateUnitsElem].forEach((elem, index) => {
+        elem.className = 'fade-in-line';
+        setTimeout(() => {
+            elem.style.opacity = '1';
+        }, 500 * (index + 1));
+        resultDiv.appendChild(elem);
+    });
 });
