@@ -98,6 +98,9 @@ class handler(BaseHTTPRequestHandler):
             "longitude": subjectLocation.get("longitude", None)
         }
 
+        print("Debugging: response object:")
+        print(response)
+
         # Send the response to client
         self.wfile.write(json.dumps(response).encode())
 
