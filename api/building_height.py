@@ -1,4 +1,11 @@
-from main import get_building_height_from_input
+##################
+## ONLY         ##
+## WORKS        ##
+## PARTIALLY!!! ##
+##################
+
+
+from main import *
 from density import get_density, density_data
 from location import Location
 from http.server import BaseHTTPRequestHandler
@@ -36,7 +43,7 @@ class handler(BaseHTTPRequestHandler):
         input_data = post_data.decode("utf-8")
 
         # Get the results for the given location
-        result = get_building_height_from_input(input_data)
+        result = get_tallest_building_within_one_mile(input_data)
         loc = result['result'].get('location', None)
 
         # Get the city and county from the Location object
@@ -93,3 +100,56 @@ class handler(BaseHTTPRequestHandler):
 
         # Send the response
         self.wfile.write(json.dumps(response).encode())
+
+def get_tallest_building_within_one_mile(input_data):
+    # Get location object
+    loc = Location(input_data)
+    lat, lon = get_location_coordinates(input_data, loc)
+    city, county = loc.get_city_and_county()
+
+    # Get building object
+    building_obj = Building(lat, lon)
+
+    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
+    print(f"\nSUBJECT PROPERTY:")
+    print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
+    print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
+
+    # Get top buildings
+    top_buildings = get_top_buildings(building_obj)
+    print_top_buildings(top_buildings, building_obj)
+
+    # Get approx. stories
+    tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
+    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
+    print(f"Approx. stories: {approx_stories}")
+
+    # Get walkability score
+    walkability_score = loc.get_walkability_score()
+    print(f"\nWalkability Score: {walkability_score}")
+
+    # Get max density in municipality
+    max_density = get_density(city) if city else get_density(county)
+    
+    # Log results
+    print(f"\n .--------------------------------------------------------------------------------.")
+    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
+    print(f" '--------------------------------------------------------------------------------'\n\n")
+    
+    # Collect results
+    result = {
+        "height": tallest_building_details.get('height', 'Unknown'),
+        "address": tallest_building_details.get('address', 'Unknown'),
+        "latitude": tallest_building_details.get('latitude', 'Unknown'),
+        "longitude": tallest_building_details.get('longitude', 'Unknown'),
+        "city": city,
+        "county": county,
+        "density": max_density,
+        "distance": tallest_building_details.get('distance', 'Unknown'),
+        "building_name": tallest_building_details.get('name', 'Unknown'),
+        "location": loc
+    }
+
+    # Return results dictionary
+    response = {"result": result}
+    return response

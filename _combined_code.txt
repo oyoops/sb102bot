@@ -1,0 +1,1290 @@
+### File: public/script2.js\nconst mainHeader = document.getElementById('mainHeader');
+
+async function reverseGeocode(lat, lng) {
+    const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
+    const endpoint = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}`;
+  
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      if (data.status === "OK") {
+        // Return the formatted address
+        //return data.results[0].formatted_address;  //////////////////////////////
+        return data.results[0];
+      } else {
+        console.error("Geocoding error:", data.status);
+        return null;
+      }
+    } catch (error) {
+      console.error("Failed to reverse geocode:", error);
+      return null;
+    }
+  }
+
+document.getElementById('searchForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const userInputText = document.getElementById('addressInput').value;
+    const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
+    const loadingDiv = document.querySelector('.loading');
+
+    // hide the initial content
+    mainHeader.style.display = 'none';
+    initialContent.style.display = 'none';
+    // Show the loading indicator
+    loadingDiv.style.display = 'block';
+    // Reset the result div opacity to 0 to achieve the fade-in effect on new data
+    resultDiv.style.opacity = 0;
+
+    // Send input address to endpoint /analyze_address
+    try {
+        //console.log("Sending address to endpoint analyze_address...");
+        const response = await fetch('https://sb102bot-gh.vercel.app/api/analyze_address', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                address: userInputText
+            }),
+        });
+
+        // Await response from sb102bot server
+        const data = await response.json();
+        //console.log("Response from /analyze_address: \n", data);
+        
+        // Extract the data from the response
+        const { address, city, county, density, walkscore, latitude, longitude } = data;
+        //  .****.
+        //  | ^--+-- WILL THIS BREAK IF IT IS NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE??
+        //  '****'
+        
+        //   .--------------------------------------,
+        //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
+        //   '------------------------------------'
+
+        // "Clean" the user input address by reverse-geocoding the already-geocoded address (this should really be done server-side) 
+        const inputLocationClean = await reverseGeocode(latitude, longitude);
+        const inputAddressClean = inputLocationClean.formatted_address;        
+        //console.log("Cleaned address: ", inputAddressClean);
+
+        // Print all values in address_components
+        console.log("Address components: ", inputLocationClean.address_components);
+
+        // Use the cleaned Location object to get the details we need
+        const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short_name
+        const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
+        const inputCity = inputLocationClean.address_components.find(c => c.types[0] === 'locality')?.short_name
+        const inputCounty = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_2')?.short_name
+        const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
+        const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
+        // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
+        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber + ' ' : ''}${inputStreetName ? inputStreetName + ', ': ''}${inputCity ? inputCity + '': ''}`;
+        console.log("Constructed address:", inputAddressConstructed); // from custom reconstruction
+
+        //   .--------------------------------------,
+        //   |    Prepare assets for response      /
+        //   '------------------------------------'
+
+        // Google Maps redirect URL:
+        const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        // Street View image URL:
+        const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
+
+        //   .--------------------------------------,
+        //   |  Construct the complete response    /
+        //   '------------------------------------'
+
+        // STREET VIEW & GOOGLE MAPS LINK:
+        let resultContent = `
+            <div class="imageContainer">
+                <div class="imageItem">
+                    <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                </div>
+                <div class="imageItem">
+                    <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
+                    <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                </div>
+            </div>
+        `;
+        
+        // MAXIMUM MUNICIPAL DENSITY LOOKUP:
+        if (!density || density <= 0) {
+            resultContent += `
+                <div class="fade-in-line"><br>Unfortunately, I don't know ${inputCity !== '-' ? inputCity : inputCounty}'s maximum residential density.<br>This info is necessary for coming up with a unit count.</div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?<br></div>
+            `;
+        } else {
+            resultContent += `
+                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.<br><br><br></div>
+            `;
+        }
+        
+        //   .------------------------------------,
+        //   |    Display the full response      /
+        //   '----------------------------------'
+
+        // Set the content of the result div to our fully-generated content
+        resultDiv.innerHTML = resultContent;
+        resultDiv.style.opacity = '1';
+
+        // Fade the response in line-by-line
+        let delayPerLine = 500 // milliseconds
+        let delay = 0;
+        const fadeInLines = document.querySelectorAll('.fade-in-line');
+        fadeInLines.forEach(line => {
+            setTimeout(() => {
+                line.style.opacity = '1';
+            }, delay);
+            delay += delayPerLine;
+        });
+        // Hide loading indicator
+        loadingDiv.style.display = 'none';
+        // Show "Try Again" button
+        tryAgainButton.style.display = 'block';
+
+    } catch (error) {
+        console.log("Error while sending/receiving data: ", error);
+        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
+        loadingDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
+    }
+});
+
+
+// Handle 'Try Again' button click
+document.getElementById('tryAgainButton').addEventListener('click', function() {
+    const resultDiv = document.getElementById('result');
+    const initialContent = document.getElementById('initialContent');
+    const tryAgainButton = document.getElementById('tryAgainButton');
+    const mainHeader = document.getElementById('mainHeader');
+    // Hide results and "Try Again" button
+    resultDiv.style.opacity = '0';
+    tryAgainButton.style.display = 'none';
+    // Show the initial content and the main header
+    initialContent.style.display = 'block';
+    mainHeader.style.display = 'block';
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
+});
+
+
+// Fade in the input box upon page load (adds a class to the input after the page loads to trigger the transition)
+window.addEventListener('load', () => {
+     // slight delay (100 ms) to ensure styles are applied after load
+     setTimeout(() => {
+        const input = document.getElementById('addressInput');
+        input.style.opacity = 1;
+        input.style.transform = 'translateY(0)';
+    }, 100);
+});\n--------------------------------------------------\n### File: public/index.html\n<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="apple-touch-icon" sizes="180x180" href="/imgs/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/imgs/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/misc/site.webmanifest">
+    <title>Live Local Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="menuBar">
+        <a href="https://cresunshine.com">  x</a>
+        <div id="sunIcon"></div>
+        <a href="https://cresunshine.com">o  </a>
+    </div>
+    <br><br>
+    <h1 id="mainHeader">
+        What does the <b>Live Local Act</b> let you do?
+    </h1>
+    <div id="initialContent">
+        <p>
+            <br>Enter an address to find out.
+        </p>
+        <form id="searchForm">
+            <input type="text" id="addressInput" placeholder="420 Calle Ocho, Miami, FL">
+            <br><br>
+            <button type="submit">Underwrite</button>
+        </form>
+        <p>
+            <br>Discover a site's potential in 30 seconds.
+            <br>It might be a lot more than you thought!
+        </p>
+        <p>
+            <br><br><br>
+            Last updated Sept. 21, 2023
+            <br>Created by <a href="https://twitter.com/oyoops" target="_blank"><u>@oyoops</u></a> | <a href="https://cresunshine.com/" target="_blank"><u>CRE☀️</u></a>
+        </p>
+    </div>
+    <div id="result">
+        <div class="imageContainer">
+            <div id="inputAddressImage" class="imageItem"></div>
+            <div id="tallestBuildingImage" class="imageItem"></div>
+        </div>
+    </div>
+    <div class="loading">Conducting due diligence</div>
+    <footer>
+    </footer>
+    <button id="tryAgainButton" style="display: none;">
+        <b>Search for another property</b>
+    </button>
+    <script src="script2.js"></script>
+    <!-- <script src="addressAnalysis.js"></script> -->
+    <!-- <script src="additionalContent.js"></script> -->
+</body>
+</html>\n--------------------------------------------------\n### File: public/styles.css\nhtml {
+    background: linear-gradient(to bottom, #f4f4f4, #e6e9ec);
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #f4f4f4, #e6e9ec);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5em;
+    color: #333;
+    margin-top: 50px;
+    font-weight: 700;
+}
+p {
+    color: #666;
+    font-weight: 300;
+}
+form {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+#addressInput {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 1s, transform 1s;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #4678dc;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #044b98;
+}
+#menuBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 0;
+    background-color: #afc6ed;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+#menuBar a:first-child {
+    margin-right: 20px;
+    cursor: pointer;
+}
+#menuBar a:last-child {
+    margin-left: 20px;
+    cursor: pointer;
+}
+#sunIcon {
+    display: inline-block;
+    background-color: #2b18b8;
+    border-radius: 50%;
+    width: 50x;
+    height: 50px;
+    position: relative;
+}
+#sunIcon::before {
+    content: "☀️";
+    font-size: 2.0em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+footer {
+    padding: 20px;
+    background-color: #afc6ed;
+    box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.0em;
+}
+
+footer a {
+    color: #044b98;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+#tryAgainButton {
+    position: fixed;
+    bottom: 20px; /* Push it a bit up from the bottom */
+    left: 50%;
+    font-weight: 500; 
+    transform: translateX(-50%);
+    background-color: #afc6ed;
+    color: #333;
+    z-index: 1001; /* Make sure it's above other elements */
+}
+
+#result {
+    transition: opacity 0.5s;
+    width: 80vw;
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 51%;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+    display: none;
+    font-weight: 700;
+    color: #007BFF;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading::after {
+    content: '...';
+    animation: spin 1s infinite;
+}
+
+.fade-in-line {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.imageContainer {
+    display: flex; 
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+    justify-content: space-around; 
+    align-items: center; 
+    margin-top: 20px;
+    width: 100%;
+}
+
+.imageContainer p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.imageItem {
+    width: calc(50% - 2%); /* 50% width minus a 1% margin on each side */
+    margin: 1% 1%; 
+    text-align: center; 
+    box-sizing: border-box;
+}
+
+.imageItem img {
+    width: 100%; /* Make the image take up the entire width of its container */
+    max-width: 600px; /* Cap to a maximum size */
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}\n--------------------------------------------------\n### File: api/analyze_address.py\nfrom main import *
+from constants import *
+from density import get_density, density_data
+from location import Location
+from http.server import BaseHTTPRequestHandler
+import json
+
+import psycopg2
+import os
+
+###  This endpoint accepts client POST requests to https://sb102bot/api/analyze_address
+###  which executes ________?________ function using address input.
+
+class handler(BaseHTTPRequestHandler):
+    def send_cors_headers(self):
+        """Set headers for Cross-Origin Resource Sharing (CORS)"""
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+
+    def do_OPTIONS(self):
+        """Respond to an OPTIONS request."""
+        self.send_response(204)
+        self.send_cors_headers()
+        self.end_headers()
+    
+    def do_GET(self):
+        # Handle the GET request here, maybe return a basic message or form
+        self.send_response(200)
+        self.send_cors_headers()
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(str("Send a POST request with an address to analyze an address.").encode())
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+
+        # Convert the incoming bytes to a UTF-8 string
+        input_data_str = post_data.decode("utf-8")
+
+        # Convert the JSON-formatted string to a Python dictionary
+        input_data = json.loads(input_data_str)
+
+        # Now you can use .get() because input_data is a dictionary
+        userInputAddress = input_data.get('address', '')
+        print(f"User input address: {userInputAddress}")
+
+        # Geocode, and then reverse-geocode, the input address
+        subjectLocation = get_address_analysis(userInputAddress)
+        # Extract just the Location object from the resulting dictionary
+        subjectLoc = subjectLocation.get('location', None)
+
+        # Get city and county
+        if subjectLoc:
+            city, county = subjectLoc.get_city_and_county()
+        else:
+            city, county = None, None
+
+        # Max. municipal densities table lookup
+        if city:
+            municipality = city
+            density_value = get_density(municipality)
+            print("Highest density in", municipality, "is", density_value, "units/ac.")
+        elif county:
+            municipality = county
+            density_value = get_density(municipality)
+            print("Highest density in", municipality, "is", density_value, "units/ac.")
+        else:
+            municipality = "Unknown"
+            # no data for this municipality
+            density_value = 0
+            print("No density data available for this municipality.")        
+        
+        # Print max. municipal density results
+        print("City:", city)
+        print("County:", county)
+        print("Municipality:", municipality)
+        print("Density:", density_value, "units/ac.")
+        
+
+        #####################################################################################################
+
+
+        ## RESPONSE:
+
+        # Set headers
+        self.send_response(200)
+        self.send_cors_headers()
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        
+        # Compose the response
+        response = {
+            "address": subjectLocation.get("address", None),
+            "city": subjectLocation.get("city", None),
+            "county": subjectLocation.get("county", None),
+            "density": subjectLocation.get("density", None),
+            "walkscore": subjectLocation.get("walkscore", None),
+            "latitude": subjectLocation.get("latitude", None),
+            "longitude": subjectLocation.get("longitude", None)
+        }
+
+        print("Debugging: response object:")
+        print(response)
+
+        # Send the response to client
+        self.wfile.write(json.dumps(response).encode())
+
+
+# --------------
+
+
+# CLEAN and DETAIL location (geocodes and reverse geocodes user input)
+def get_address_analysis(userInputAddress):
+
+    # Initialize the input as a Location object 
+    loc = Location(userInputAddress)
+        # ^ Will this fail if the address is not found / bad input? If so, would it cause the whole web app to stop functioning?
+    
+    # Get details of the location
+    lat, lon = loc.geocode_address()
+    city, county = loc.get_city_and_county()
+    walkability_score = loc.get_walkability_score()
+    max_density = get_density(city) if city else get_density(county)
+    
+    # Log results
+    print(f"\n ,----------------.---------------------------.")
+    print(f" |   RESULTS       /  Live Local Act Analysis |")
+    print(f"  >---------------+---------------------------|\n")    
+    print(f" |   SUBJECT:     |", userInputAddress,"\n")
+    print(f"  >---------------+---------------------------|\n")    
+    print(f" |   Lat/Long     | {round(lat, 5)}, {round(lon, 5)}")
+    print(f"  >---------------+---------------------------|\n")    
+    print(f" |   City         | {city if city else 'Unknown'}\n")
+    print(f" |   County       | {county if county else 'Unknown'}")
+    print(f" |   Max. Density | {max_density} units/ac.")
+    print(f"  >---------------+---------------------------|\n")    
+    print(f" |   Walkability  | {walkability_score}")
+    print(f" '----------------^---------------------------'\n")
+    
+    ##### ATTEMPT POSTGRESQL CONNECTION
+    conn = connect_to_database()
+    if conn:
+        print("Connected to the PostgreSQL database  :-)")
+        conn.close()
+    else:
+        print("FAILED to connect to the PostgreSQL database  :'-(")
+    #####
+
+    # Compose result dictionary
+    result = {
+        "address": userInputAddress,
+        "city": city,
+        "county": county,
+        "density": max_density,
+        "walkscore": walkability_score,
+        "latitude": lat,
+        "longitude": lon,
+        "location": loc
+    }
+    # Return result dictionary
+    return result
+
+
+# Connect to the PostGRESQL database
+def connect_to_database():
+    conn = None
+    try:
+        conn = psycopg2.connect(
+            host="45.82.75.6",
+            port="5432",
+            dbname="sb102bot_db",
+            user="postgres",
+            password=DB_PASSWORD
+        )
+        print("Connected to the database!")
+    except Exception as e:
+        print("Unable to connect to the database.")
+        print(e)
+    return conn
+\n--------------------------------------------------\n### File: main.py\nfrom location import Location
+from building import Building
+from density import get_density
+from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
+
+# "Main" function of the /building_height endpoint
+# (trying to deprecate now)
+def get_building_height_from_input(input_data):
+    # Get location object
+    loc = Location(input_data)
+    lat, lon = get_location_coordinates(input_data, loc)
+    city, county = loc.get_city_and_county()
+
+    # Get building object
+    building_obj = Building(lat, lon)
+
+    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
+    print(f"\nSUBJECT PROPERTY:")
+    print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
+    print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
+
+    # Get top buildings
+    top_buildings = get_top_buildings(building_obj)
+    print_top_buildings(top_buildings, building_obj)
+
+    # Get approx. stories
+    tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
+    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
+    print(f"Approx. stories: {approx_stories}")
+
+    # Get walkability score
+    walkability_score = loc.get_walkability_score()
+    print(f"\nWalkability Score: {walkability_score}")
+
+    # Get max density in municipality
+    max_density = get_density(city) if city else get_density(county)
+    
+    # Log results
+    print(f"\n .--------------------------------------------------------------------------------.")
+    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
+    print(f" '--------------------------------------------------------------------------------'\n\n")
+    
+    # Collect results
+    result = {
+        "height": tallest_building_details.get('height', 'Unknown'),
+        "address": tallest_building_details.get('address', 'Unknown'),
+        "latitude": tallest_building_details.get('latitude', 'Unknown'),
+        "longitude": tallest_building_details.get('longitude', 'Unknown'),
+        "city": city,
+        "county": county,
+        "density": max_density,
+        "distance": tallest_building_details.get('distance', 'Unknown'),
+        "building_name": tallest_building_details.get('name', 'Unknown'),
+        "location": loc
+    }
+
+    # Return results dictionary
+    response = {"result": result}
+    return response
+
+
+# ---
+
+
+# Determine if user input is in lat,lng format or an address and geocode if necessary
+def get_location_coordinates(input_data, loc_obj):
+    try:
+        lat, lon = map(float, input_data.split(','))
+        print(f"Input Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
+    except ValueError:
+        lat, lon = loc_obj.geocode_address()
+        print(f"Geocoded Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
+    return lat, lon
+
+# Function to get top buildings
+def get_top_buildings(building_obj):
+    buildings = building_obj.get_building_heights()
+    return sorted(buildings, key=lambda x: float(x['height']), reverse=True)[:3]
+
+# Function to print top buildings
+def print_top_buildings(top_buildings, building_obj):
+    for idx, building in enumerate(top_buildings):
+        building_details = building_obj.get_detailed_building_info(building)
+        print(f"\n  #{idx + 1}  Name:        {building_details['name']}")
+        print(f"      Height:      {building_details['height']} feet")
+        print(f"      Address:     {building_details['address']}")
+        print(f"      Lat, Long:   {building_details['latitude']}, {building_details['longitude']}")
+        print(f"      Distance:    {building_details['distance']} mi.")
+
+# Function to get tallest building details
+def get_tallest_building_details(buildings, building_obj):
+    tallest_building = max(buildings, key=lambda x: float(x['height']))
+    tallest_building_info = building_obj.get_building_info(tallest_building['id'], tallest_building['type'])
+    tallest_bldg_name = tallest_building_info.get('Tags', {}).get('name', "Unknown")
+    tallest_bldg_address = f"{tallest_building_info.get('Tags', {}).get('addr:housenumber', '-')}, {tallest_building_info.get('Tags', {}).get('addr:street', '')}"
+    tallest_geometry = building_obj.fetch_geometry(tallest_building['id'], tallest_building['type'])
+    tallest_building_lat, tallest_building_lon = tallest_geometry[0] if tallest_geometry and len(tallest_geometry) > 0 else (None, None)
+    distance = Location.haversine_distance(building_obj.latitude, building_obj.longitude, tallest_building_lat, tallest_building_lon) if tallest_building_lat is not None and tallest_building_lon is not None else None
+    distance = round(distance, 2) if distance else None
+    
+    return {
+        "height": int(round(float(tallest_building['height']))),
+        "address": tallest_bldg_address,
+        "latitude": tallest_building_lat,
+        "longitude": tallest_building_lon,
+        "distance": distance,
+        "building_name": tallest_bldg_name
+    }
+
+
+# ---
+
+
+# Main script
+def main(input_data):
+
+    # Get location object
+    loc = Location(input_data)
+    lat, lon = get_location_coordinates(input_data, loc)
+    city, county = loc.get_city_and_county()
+
+    # Get building object
+    building_obj = Building(lat, lon)
+
+    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
+    print(f"\nSUBJECT PROPERTY:")
+    print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
+    print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
+
+    # Get top buildings
+    top_buildings = get_top_buildings(building_obj)
+    print_top_buildings(top_buildings, building_obj)
+
+    # Get approx. stories
+    tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
+    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
+    print(f"Approx. stories: {approx_stories}")
+
+    # Get walkability score
+    walkability_score = loc.get_walkability_score()
+    print(f"\nWalkability Score: {walkability_score}")
+
+    # Get max density in municipality
+    max_density = get_density(city) if city else get_density(county)
+    
+    # Log results
+    print(f"\n .--------------------------------------------------------------------------------.")
+    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
+    print(f" '--------------------------------------------------------------------------------'\n\n")
+    
+    # Return results
+    return {
+        "height": tallest_building_details.get('height', 'Unknown'),
+        "address": tallest_building_details.get('address', 'Unknown'),
+        "latitude": tallest_building_details.get('latitude', 'Unknown'),
+        "longitude": tallest_building_details.get('longitude', 'Unknown'),
+        "city": city,
+        "county": county,
+        "density": max_density,
+        "distance": tallest_building_details.get('distance', 'Unknown'),
+        "building_name": tallest_building_details.get('name', 'Unknown'),
+        "location": loc
+    }
+
+
+# Script entry point
+if __name__ == '__main__':
+    main()
+\n--------------------------------------------------\n### File: location.py\nfrom constants import GOOGLE_API_KEY
+import utilities
+import requests
+import math
+import logging
+import json
+
+
+# Initialize logging
+logging.basicConfig(level=logging.DEBUG)
+
+class Location:
+
+    def __init__(self, input_data):
+        self.input_data = input_data
+        self.latitude = None
+        self.longitude = None
+
+    def geocode_address(self):
+        logging.debug("Geocoding address.")
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            'address': self.input_data,
+            'key': GOOGLE_API_KEY
+        }
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            logging.error(f"Error geocoding address: \n  {data}")
+            raise ValueError("Error geocoding address.\nCheck the address and try again.")
+        
+        self.latitude = data['results'][0]['geometry']['location']['lat']
+        self.longitude = data['results'][0]['geometry']['location']['lng']
+        logging.debug(f"Geocoded:  {data}\n       via G-API into\n   Latitude:  {self.latitude} \n Longitude:  {self.longitude}\n")
+
+        return self.latitude, self.longitude
+
+    def get_city_and_county(self):
+        logging.debug("Fetching city and county using Google Maps API.")
+        
+        if self.latitude is None or self.longitude is None:
+            logging.error("Latitude and/or longitude have not been set.")
+            raise ValueError("Latitude and/or longitude have not been set.")
+        
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        params = {
+            'latlng': f"{self.latitude},{self.longitude}",
+            'key': GOOGLE_API_KEY
+        }
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if data['status'] != 'OK':
+            logging.error(f"Error fetching city and county: \n  {data}")
+            raise ValueError("Error fetching city and county.")
+                
+        city = None
+        county = None
+        for result in data['results']:
+            for component in result['address_components']:
+                if 'locality' in component['types']:
+                    city = component['long_name']
+                if 'administrative_area_level_2' in component['types']:
+                    county = component['long_name']
+        
+        if city is None or county is None:
+            logging.error("Could not find city or county.")
+            raise ValueError("Could not find city or county.")
+
+        logging.debug(f"Extracted City: {city}, Extracted County: {county}")
+
+        return city, county
+
+    def get_walkability_score(self):
+        API_KEY = GOOGLE_API_KEY
+        types = ['grocery_or_supermarket', 'park', 'school', 'transit_station']
+        score = 0
+        
+        for amenity_type in types:
+            endpoint = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={self.latitude},{self.longitude}&radius=1000&type={amenity_type}&key={API_KEY}"
+            
+            try:
+                response = requests.get(endpoint)
+                data = json.loads(response.text)
+                
+                if data['status'] == 'OK' and len(data['results']) > 0:
+                    # THIS IS A LAUGHABLY STUPID METHOD TO CALCULATE A "WALKABILITY SCORE"
+                    score += 25  # Increment score for each amenity type found within 1km
+                    print(f"Found {amenity_type} within 1km of {self.latitude}, {self.longitude}")
+
+            except Exception as e:
+                print(f"Failed to fetch nearby places: {e}")
+                
+        return score
+    
+
+    @staticmethod
+    def haversine_distance(lat1, lon1, lat2, lon2):
+        R = 6371  # Radius of Earth in kilometers
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+        a = math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(math.radians(lat1)) \
+            * math.cos(math.radians(lat2)) * math.sin(dlon / 2) * math.sin(dlon / 2)
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        distance = R * c
+        distance = distance * 0.621371 # Convert to miles
+        return distance\n--------------------------------------------------\n### File: building.py\nimport requests
+import xml.etree.ElementTree as ET
+from location import Location
+from constants import METERS_IN_MILE, DEFAULT_RADIUS_IN_MILES, FEET_IN_STORY
+import math
+
+class Building:
+
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def get_building_heights(self, radius_meters=METERS_IN_MILE*DEFAULT_RADIUS_IN_MILES):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        query = f"""
+        [out:json];
+        (
+          way["building"](around:{radius_meters},{self.latitude},{self.longitude});
+          relation["building"](around:{radius_meters},{self.latitude},{self.longitude});
+        );
+        out body;
+        """
+        response = requests.get(overpass_url, params={'data': query})
+        data = response.json()
+
+        buildings = []
+        for element in data['elements']:
+            if 'tags' in element and 'height' in element['tags']:
+                buildings.append({
+                    'type': element['type'],
+                    'id': element['id'],
+                    'height': element['tags']['height']
+                })
+        return buildings
+
+    def get_building_info(self, building_id, building_type='way'):
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        query = f"""
+        [out:json];
+        {building_type}(id:{building_id});
+        out body;
+        """
+        response = requests.get(overpass_url, params={'data': query})
+        data = response.json()
+        
+        if not data['elements']:
+            print(f"No information found for {building_type} with ID {building_id}")
+            return
+        
+        building_info = data['elements'][0]
+        summary = {
+            'ID': building_info['id'],
+            'Type': building_info['type'],
+            'Latitude': building_info['center']['lat'] if 'center' in building_info else None,
+            'Longitude': building_info['center']['lon'] if 'center' in building_info else None,
+            'Tags': building_info['tags'] if 'tags' in building_info else None
+        }
+        return summary
+        
+    def get_detailed_building_info(self, building):
+        building_details = {}
+
+        # Convert meters to feet
+        building_details['height'] = int(float(building['height']) * 3.28084)
+        # Estimate stories
+        building_details['stories'] = int(building_details['height'] / FEET_IN_STORY)
+
+        # Get building info
+        binfo = self.get_building_info(building['id'], building['type'])
+        building_details['name'] = binfo.get('Tags', {}).get('name', "Unknown")
+        building_details['address'] = f"{binfo.get('Tags', {}).get('addr:housenumber', '-')}, {binfo.get('Tags', {}).get('addr:street', '')}"
+
+        # Get building's lat/long from its geometry, if available
+        geometry = self.fetch_geometry(building['id'], building['type'])
+        if geometry and len(geometry) > 0:
+            building_details['latitude'], building_details['longitude'] = geometry[0]
+        else:
+            building_details['latitude'] = None
+            building_details['longitude'] = None
+
+        if building_details['latitude'] is not None and building_details['longitude'] is not None:
+            distance = Location.haversine_distance(self.latitude, self.longitude, building_details['latitude'], building_details['longitude'])
+            building_details['distance'] = round(distance, 2)
+        else:
+            building_details['distance'] = None
+
+        return building_details
+
+    def fetch_geometry(self, osm_id, osm_type):
+        if osm_type not in ['way', 'relation']:
+            return None
+
+        url = f"https://api.openstreetmap.org/api/0.6/{osm_type}/{osm_id}.json"
+        response = requests.get(url)
+        data = response.json()
+
+        if osm_type == 'way':
+            nodes = data['elements'][0]['nodes']
+        else:
+            return None
+
+        nodes_str = ",".join(map(str, nodes))
+        url = f"https://api.openstreetmap.org/api/0.6/nodes?nodes={nodes_str}"
+        response = requests.get(url)
+            
+        if response.status_code != 200:
+            print(f"Error fetching nodes. Status Code: {response.status_code}")
+            print("Response content:")
+            print(response.text)
+            return None
+
+        root = ET.fromstring(response.content)
+        nodes = []
+        for node in root.findall('node'):
+            lat = float(node.attrib['lat'])
+            lon = float(node.attrib['lon'])
+            nodes.append((lat, lon))
+
+        geometry = nodes
+            
+        return geometry
+
+@staticmethod
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of Earth in kilometers
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(math.radians(lat1)) \
+    * math.cos(math.radians(lat2)) * math.sin(dlon / 2) * math.sin(dlon / 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = R * c
+    distance = distance * 0.621371 # Convert to miles
+    return distance\n--------------------------------------------------\n### File: density.py\n
+# Define the max-density-per-acre dictionary
+density_data = {
+    "MIAMI-DADE": 50,
+    "MIAMI-DADE COUNTY": 50,
+    "MIAMI DADE COUNTY": 50,
+    "MIAMI": 100,
+    "MIAMI BEACH": 100,
+    "FT. LAUDERDALE": 100,
+    "FORT LAUDERDALE": 100,
+    "FT LAUDERDALE": 100,
+    "FORT LAUDERDALE": 100,
+    "BROWARD": 50,
+    "PALM BEACH": 50,
+    "PALM BEACH COUNTY": 50,
+
+    "MARTIN": 15,
+    "MARTIN COUNTY": 15,
+    "ST. LUCIE": 15,
+    "ST LUCIE": 15,
+    "ST. LUCIE COUNTY": 15,
+    "ST LUCIE COUNTY": 15,
+    "INDIAN RIVER": 15,
+    "INDIAN RIVER COUNTY": 15,
+    "OKEECHOBEE": 15,
+    "OKEECHOBEE COUNTY": 15,
+    "HENDRY": 15,
+    "HENDRY COUNTY": 15,
+    "GLADES": 15,
+    "GLADES COUNTY": 15,
+    "COLLIER": 15,
+    "COLLIER COUNTY": 15,
+    "LEE": 15,
+    "LEE COUNTY": 15,
+    "CHARLOTTE": 15,
+    "CHARLOTTE COUNTY": 15,
+    "DESOTO": 15,
+    "DESOTO COUNTY": 15,
+    "HIGHLANDS": 15,
+    "HIGHLANDS COUNTY": 15,
+    "HARDEE": 15,
+    "HARDEE COUNTY": 15,
+    "MANATEE": 15,
+    "MANATEE COUNTY": 15,
+    "SARASOTA": 15,
+    "SARASOTA COUNTY": 15,
+    "DE SOTO": 15,
+    "DE SOTO COUNTY": 15,
+    "PINELLAS": 15,
+    "PINELLAS COUNTY": 15,
+    "HILLSBOROUGH": 15,
+    "HILLSBOROUGH COUNTY": 15,
+    "PASCO": 15,
+    "PASCO COUNTY": 15,
+    "HERNANDO": 15,
+    "HERNANDO COUNTY": 15,
+    "CITRUS": 15,
+    "CITRUS COUNTY": 15,
+    "SUMTER": 15,
+    "SUMTER COUNTY": 15,
+    "LAKE": 15,
+    "LAKE COUNTY": 15,
+    "VOLUSIA": 15,
+
+    "DAYTONA": 15,
+    "DAYTONA BEACH": 15,
+    "ORMOND": 15,
+    "ORMOND BEACH": 15,
+    "FLAGLER": 15,
+    "FLAGLER COUNTY": 15,
+
+    "JACKSONVILLE": 15,
+
+    "TAMPA": 15,
+
+    "ORLANDO": 15,
+
+    "OCALA": 15,
+
+    "GAINESVILLE": 15,
+
+    "TALLAHASSEE": 15,
+
+    "PENSACOLA": 15,
+
+    "KEY WEST": 100,
+
+    "KEY LARGO": 100,
+
+    "MARATHON": 100,
+
+    "ISLAMORADA": 100,
+
+    "BIG PINE": 100,
+
+    "BIG PINE KEY": 100,
+
+
+    "STUART": 30,
+
+    "PORT ST. LUCIE": 30,
+    "PORT ST LUCIE": 30,
+    "PORT SAINT LUCIE": 30,
+
+    "FORT PIERCE": 30,
+
+    "VERO BEACH": 30,
+
+    "OKEECHOBEE": 30,
+
+    "CLEWISTON": 30,
+
+    "BELLE GLADE": 30,
+
+    "PAHOKEE": 30,
+
+    "SOUTH BAY": 30,
+
+    "IMMOKALEE": 30,
+
+    "NAPLES": 30,
+
+    "FORT MYERS": 30,
+
+    "CAPE CORAL": 30,
+
+    "PUNTA GORDA": 30,
+
+    "ARCADIA": 30,
+
+    "BRADENTON": 30,
+
+    "SARASOTA": 30,
+
+    "VENICE": 30,
+
+    "NORTH PORT": 30,
+
+    "PORT CHARLOTTE": 30,
+
+    "BROOKSVILLE": 30,
+
+    "INVERNESS": 30,
+
+    "BUSHNELL": 30,
+
+    "LEESBURG": 30,
+
+    "EUSTIS": 30,
+
+    "DELAND": 30,
+
+    "HOLLYWOOD": 100,
+    "HOLLYWOOD BEACH": 100,
+    
+    "HALLANDALE": 100,
+    "HALLANDALE BEACH": 100,
+
+    "SUNNY ISLES": 100,
+    "SUNNY ISLES BEACH": 100,
+
+    "AVENTURA": 100,
+
+    "NORTH MIAMI": 100,
+    "NORTH MIAMI BEACH": 100,
+
+    "MIAMI GARDENS": 100,
+
+    "MIAMI LAKES": 100,
+
+    "MIAMI SPRINGS": 100,
+
+    "MIAMI SHORES": 100,
+
+    "MIAMI BEACH": 100,
+
+    "SURFSIDE": 100,
+
+    "BAL HARBOUR": 100,
+
+    "BAY HARBOR": 100,
+    "BAY HARBOR ISLANDS": 100,
+
+    "INDIAN CREEK": 100,
+
+    "SOUTH MIAMI": 100,
+
+    "CORAL GABLES": 100,
+
+    "COCONUT GROVE": 100,
+    
+    "KEY BISCAYNE": 100,
+
+    "PINECREST": 100,
+
+    "PALMETTO BAY": 100,
+
+    "CUTLER BAY": 100,
+
+    "HOMESTEAD": 100,
+
+    "FLORIDA CITY": 100,
+
+    "SWEETWATER": 100,
+
+    "WEST MIAMI": 100,
+
+    "MIAMI": 100,
+    
+    "ST. PETE": 80,
+    "ST PETE": 80,
+    "ST. PETERSBURG": 80,
+    "ST PETERSBURG": 80,
+    "ST. AUGUSTINE": 50,
+
+}
+
+def get_density(location: str) -> int:
+    """Retrieve the density per acre for a given location."""
+    # Convert the location to uppercase to match the dictionary keys
+    location = location.upper()
+    
+    # Printing the received location and the resulting density value
+    density_val = density_data.get(location, 0)
+    print(f"Location Received: {location}, Density Value: {density_val}")
+    
+    # Return the density value
+    return density_val
+
+\n--------------------------------------------------\n### File: utilities.py\n# Get a value from a nested dictionary, even if the key doesn't exist
+def safe_get(dictionary, keys, default=None):
+    """
+    A helper function to safely get a value from a nested dictionary.
+    """
+    for key in keys:
+        if key in dictionary:
+            dictionary = dictionary[key]
+        else:
+            return default
+    return dictionary
+
+# Get coord pair from geometry
+def calculate_centroid(geometry):
+    """
+    Get the centroid from a geometry list.
+    """
+    # If the geometry list is not empty, return the first coordinate pair
+    if geometry and isinstance(geometry, list) and isinstance(geometry[0], tuple) and len(geometry[0]) >= 2:
+        return geometry[0]
+    return None, None
+\n--------------------------------------------------\n### File: constants.py\nimport os
+
+# Rules:
+DEFAULT_RADIUS_IN_MILES = 1.01
+FEET_IN_STORY = 10
+
+# Distance conversions:
+METERS_IN_MILE = 1609.34
+
+# API Keys:
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+\n--------------------------------------------------\n
