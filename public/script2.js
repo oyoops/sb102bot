@@ -55,16 +55,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         // Extract the data from the response
         //   <----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT?  **********************************
-        result = {
-            address,
-            city,
-            county,
-            density,
-            walkscore,
-            latitude,
-            longitude,
-            location
-        } = data;
+        const { address, city, county, density, walkscore, latitude, longitude } = data;
 
         // ---
 
