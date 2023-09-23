@@ -64,7 +64,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             latitude,
             longitude,
             location
-        }
+        } = data;
 
         // ---
 
