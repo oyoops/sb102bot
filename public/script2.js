@@ -33,35 +33,40 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     // hide the initial content
     mainHeader.style.display = 'none';
     initialContent.style.display = 'none';
-    // Show the loading indicator and 
+    // Show the loading indicator
     loadingDiv.style.display = 'block';
     // Reset the result div opacity to 0 to achieve the fade-in effect on new data
     resultDiv.style.opacity = 0;
 
-    // Send user input to sb102bot server
+    // Send input address to endpoint /analyze_address
     try {
-        console.log("Sending address to analyze_address endpoint...");
+        console.log("Sending address to endpoint analyze_address...");
         const response = await fetch('https://sb102bot-gh.vercel.app/api/analyze_address', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: userInputText }),
+            body: JSON.stringify({ 
+                address: userInputText
+            }),
         });
 
-        // Get response from the endpoint
+        // Await response from sb102bot server
         const data = await response.json();
-        console.log("Response from analyze_address: \n", data);
+        console.log("Response from /analyze_address: \n", data);
         
         // Extract the data from the response
         //   <----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT?  **********************************
         const { address, city, county, density, walkscore, latitude, longitude } = data;
 
-        // ---
+        //   .--------------------------------------,
+        //   |  Reverse-geocode on client side     /    (BAD FORM!!!)
+        //   '------------------------------------'
 
         // Reverse-geocode the geocoded location in order to get one with a clean, complete address (seems redundant, but it works) 
         const inputLocationClean = await reverseGeocode(latitude, longitude);
-        // Use this slightly-better Location object to get the details we need
+        console.log("Cleaned address: ", inputAddressClean); // from reverse geocoding the geocoded location
+        // Use this cleaned Location object to get the details we need
         const inputAddressClean = inputLocationClean.formatted_address;
         const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
@@ -70,21 +75,23 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
         const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
         // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
-        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
-        console.log("Cleaned address A: ", inputAddressClean); // from reverse geocoding the geocoded location
-        console.log("Cleaned address B: ", inputAddressConstructed); // from custom reconstruction
+        //const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
+        //console.log("Cleaned address B: ", inputAddressConstructed); // from custom reconstruction
 
-        // ---
+        //   .--------------------------------------,
+        //   |    Prepare assets for response      /
+        //   '------------------------------------'
 
-        // Compose the URLs for the Google Maps and Street View components
+        // Google Maps redirect URL:
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        // Street View image URL:
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
 
         //   .--------------------------------------,
         //   |  Construct the complete response    /
         //   '------------------------------------'
 
-        // GOOGLE MAPS & STREET VIEW IMAGES:
+        // STREET VIEW & GOOGLE MAPS LINK:
         let resultContent = `
             <div class="imageContainer">
                 <div class="imageItem">
