@@ -40,7 +40,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     // Send input address to endpoint /analyze_address
     try {
-        console.log("Sending address to endpoint analyze_address...");
+        //console.log("Sending address to endpoint analyze_address...");
         const response = await fetch('https://sb102bot-gh.vercel.app/api/analyze_address', {
             method: 'POST',
             headers: {
@@ -53,14 +53,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // Await response from sb102bot server
         const data = await response.json();
-        console.log("Response from /analyze_address: \n", data);
+        //console.log("Response from /analyze_address: \n", data);
         
         // Extract the data from the response
-        //   <----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT?  **********************************
         const { address, city, county, density, walkscore, latitude, longitude } = data;
-
+        //   ^----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE???  *****
+        
         //   .--------------------------------------,
-        //   |  Reverse-geocode on client side     /    (BAD FORM!!!)
+        //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
         //   '------------------------------------'
 
         // "Clean" the user input address by reverse-geocoding the already-geocoded address (this should really be done server-side) 
