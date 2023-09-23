@@ -171,6 +171,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
         resultDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
+        loadingDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
     }
 });
 
