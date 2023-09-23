@@ -27,12 +27,12 @@ class Location:
         data = response.json()
 
         if data['status'] != 'OK':
-            logging.error(f"Error geocoding address: {data}")
-            raise ValueError("Error geocoding address. Check the address and try again.")
+            logging.error(f"Error geocoding address: \n  {data}")
+            raise ValueError("Error geocoding address.\nCheck the address and try again.")
         
         self.latitude = data['results'][0]['geometry']['location']['lat']
         self.longitude = data['results'][0]['geometry']['location']['lng']
-        logging.debug(f"Latitude: {self.latitude}, Longitude: {self.longitude}")
+        logging.debug(f"Geocoded:  {data}\n       via G-API into\n   Latitude:  {self.latitude} \n Longitude:  {self.longitude}\n")
 
         return self.latitude, self.longitude
 
@@ -52,7 +52,7 @@ class Location:
         data = response.json()
 
         if data['status'] != 'OK':
-            logging.error(f"Error fetching city and county: {data}")
+            logging.error(f"Error fetching city and county: \n  {data}")
             raise ValueError("Error fetching city and county.")
                 
         city = None

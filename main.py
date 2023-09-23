@@ -4,6 +4,7 @@ from density import get_density
 from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
 
 # "Main" function of the /building_height endpoint
+# (trying to deprecate now)
 def get_building_height_from_input(input_data):
     # Get location object
     loc = Location(input_data)
@@ -61,7 +62,7 @@ def get_building_height_from_input(input_data):
 # ---
 
 
-# Utility to get latitude and longitude
+# Determine if user input is in lat,lng format or an address and geocode if necessary
 def get_location_coordinates(input_data, loc_obj):
     try:
         lat, lon = map(float, input_data.split(','))

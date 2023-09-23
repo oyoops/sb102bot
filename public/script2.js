@@ -49,75 +49,44 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             body: JSON.stringify({ address: userInputText }),
         });
 
-        // Get the response from the server
+        // Get response from the endpoint
         const data = await response.json();
-        console.log("Got response from analyze_address endpoint.");
-        console.log("Response:", data);
-        const {
-            building_name,
+        console.log("Response from analyze_address: \n", data);
+        
+        // Extract the data from the response
+        //   <----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT?  **********************************
+        result = {
             address,
+            city,
+            county,
+            density,
             latitude,
             longitude,
-            county,
-            city,
-            distance,
-            height,
-            density,
-            walkscore,
-        } = data;
+            location
+        }
 
-        // Reverse geocode the input address
-        const inputBuilding = await reverseGeocode(latitude, longitude);
-        //const inputLatitude = inputBuilding.geometry.location.lat // no idea if this is a real endpoint or not
-        //const inputLongitude = inputBuilding.geometry.location.lng // no idea if this is a real endpoint or not
-        const inputStreetNumber = inputBuilding.address_components.find(c => c.types[0] ==='street_number')?.short
-        const inputStreetName = inputBuilding.address_components.find(c => c.types[0] === 'route')?.short_name
-        const inputCity = inputBuilding.address_components.find(c => c.types[0] === 'locality')?.short_name
-        const inputCounty = inputBuilding.address_components.find(c => c.types[0] === 'administrative_area_level_2')?.short_name
-        const inputState = inputBuilding.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
-        const inputZip = inputBuilding.address_components.find(c => c.types[0] === 'postal_code')?.short_name
+        // Reverse-geocode the geocoded location in order to get one with a clean, complete address (seems redundant, but it works) 
+        const inputLocationClean = await reverseGeocode(latitude, longitude);
+
+        // Use this slightly-better Location object to get the details we need
+        const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
+        const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
+        const inputCity = inputLocationClean.address_components.find(c => c.types[0] === 'locality')?.short_name
+        const inputCounty = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_2')?.short_name
+        const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
+        const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
+        
+        // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
         const inputAddress = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
-        
-        console.log("Corrected input address:", inputAddress);
+        console.log("Cleaned address: \n", inputAddress);
 
-        // Compose the URLs for Google Maps, Google Street View components
+        // Compose the URLs for the Google Maps and Street View components
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
-        
 
-        /*
-        // Reverse geocode the tallest building
-        const tallestBuilding = await reverseGeocode(latitudeTallest, longitudeTallest);
-
-        //const latitudeTallest = latitude;
-        //const longitudeTallest = longitude;
-
-        //  WHY AM I DOING THIS HERE??
-        //  SHOULD BE DONE SERVERSIDE
-
-        const tallestStreetNumber = tallestBuilding.address_components.find(c => c.types[0] === 'street_number')?.short_name;
-        const tallestStreetName = tallestBuilding.address_components.find(c => c.types[0] === 'route')?.short_name;
-        const tallestCity = tallestBuilding.address_components.find(c => c.types[0] === 'locality')?.short_name;
-        const tallestState = tallestBuilding.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name;
-        const tallestZip = tallestBuilding.address_components.find(c => c.types[0] === 'postal_code')?.short_name;
-        const tallestAddress = `${tallestStreetNumber ? tallestStreetNumber + ' ' : ''}${tallestStreetName ? tallestStreetName + ', ' : ''}${tallestCity ? tallestCity + ', ' : ''}${tallestState ? tallestState + ' ' : ''}${tallestZip ? tallestZip : ''}`;
-        console.log("Tallest Bldg. Address: ", tallestAddress)
-
-        //   THIS IS INCORRECT !!!
-        //   AS IT STANDS, IT'S JUST THE INPUT ADDRESS  !!!
-        // Show the input property in Street View / Google Maps
-        const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
-        // Show tallest building within radius in street view / google maps
-        const googleMapsURLTallest = `https://www.google.com/maps?q=${latitudeTallest},${longitudeTallest}`;
-        const streetViewURLTallest = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitudeTallest},${longitudeTallest}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;
-        */
-
-
-
-        //   .------------------------------------------,
-        //   |  Construct the entire result content:   /
-        //   '----------------------------------------'
+        //   .--------------------------------------------,
+        //   |  Construct the complete result content    /
+        //   '------------------------------------------'
 
         // GOOGLE MAPS & STREET VIEW IMAGES:
         let resultContent = `
@@ -146,13 +115,16 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line"><br>The highest residential density allowed in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units per acre, so a Live Local-qualified development on this property would be able to match that.<br><br><br></div>
             `;
         }
+        
+        //   .--------------------------------------------,
+        //   |    Display the full response to user      /
+        //   '------------------------------------------'
 
-
-        // Set the content of the result div to our generated content
+        // Set the content of the result div to our fully-generated content
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
-        // Fade response lines in one by one
+        // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
         let delay = 0;
         const fadeInLines = document.querySelectorAll('.fade-in-line');
@@ -162,7 +134,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             }, delay);
             delay += delayPerLine;
         });
-        
         // Hide loading indicator
         loadingDiv.style.display = 'none';
         // Show "Try Again" button
@@ -175,29 +146,24 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     }
 });
 
-
 // Handle 'Try Again' button click
 document.getElementById('tryAgainButton').addEventListener('click', function() {
     const resultDiv = document.getElementById('result');
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
     const mainHeader = document.getElementById('mainHeader');
-
     // Hide results and "Try Again" button
     resultDiv.style.opacity = '0';
     tryAgainButton.style.display = 'none';
-
     // Show the initial content and the main header
     initialContent.style.display = 'block';
     mainHeader.style.display = 'block';
-
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 });
 
-
 // Fade in the input box upon page load
-//     (adds a class to the input after the page loads to trigger the transition)
+// (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
      // slight delay (100 ms) to ensure styles are applied after load
      setTimeout(() => {
