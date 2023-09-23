@@ -1,5 +1,5 @@
 const mainHeader = document.getElementById('mainHeader');
-let globalDensity = density; // global variable to store the density value for later use in the unit calculations
+let globalDensity = null; // global variable to store the density value for later use in the unit calculations
 
 async function reverseGeocode(lat, lng) {
     const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
