@@ -65,9 +65,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // Reverse-geocode the geocoded location in order to get one with a clean, complete address (seems redundant, but it works) 
         const inputLocationClean = await reverseGeocode(latitude, longitude);
-        console.log("Cleaned address: ", inputAddressClean); // from reverse geocoding the geocoded location
-        // Use this cleaned Location object to get the details we need
         const inputAddressClean = inputLocationClean.formatted_address;
+        console.log("Cleaned address: ", inputAddressClean); // from reverse-geocoding the geocoded location on the client side
+        // Use the cleaned Location object to get the details we need
         const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
         const inputCity = inputLocationClean.address_components.find(c => c.types[0] === 'locality')?.short_name
