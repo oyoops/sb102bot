@@ -213,20 +213,14 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const resultDiv = document.getElementById('unitCalculationResult');
     resultDiv.innerHTML = "";
 
-    // Create elements to display the results
-    const totalUnitsElem = document.createElement('p');
-    const affordableUnitsElem = document.createElement('p');
-    const marketRateUnitsElem = document.createElement('p');
+    // Create a single paragraph element to display the results in a cohesive sentence
+    const resultSentence = `Based on an acreage of ${acreage}, you could potentially build ${totalUnits} total units, consisting of ${affordableUnits} affordable units and ${marketRateUnits} market-rate units. 😊`;
+    const resultElem = document.createElement('p');
+    resultElem.textContent = resultSentence;
+    resultElem.className = 'fade-in-line';
 
-    totalUnitsElem.textContent = `Total Units      : ${totalUnits}`;
-    affordableUnitsElem.textContent = `Affordable Units : ${affordableUnits}`;
-    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}<br><br><br><h1>:-)</h1>`;
-
-    [totalUnitsElem, affordableUnitsElem, marketRateUnitsElem].forEach((elem, index) => {
-        elem.className = 'fade-in-line';
-        setTimeout(() => {
-            elem.style.opacity = '1';
-        }, 500 * (index + 1));
-        resultDiv.appendChild(elem);
-    });
+    setTimeout(() => {
+        resultElem.style.opacity = '1';
+    }, 500);
+    resultDiv.appendChild(resultElem);
 });

@@ -197,3 +197,13 @@ img {
     border-radius: 8px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
+
+#calculateUnitsButton {
+    width: auto;  /* Adjust width */
+    padding: 10px 20px;
+}
+
+#tryAgainButton {
+    position: relative;  /* Fix position */
+    z-index: 1;
+}
