@@ -35,6 +35,9 @@ class handler(BaseHTTPRequestHandler):
         input_data = post_data.decode("utf-8")
         userInputAddress = input_data
 
+        print("Debugging: input_data:", input_data)
+        print("User input address:", userInputAddress)
+
         # Geocode, then reverse-geocode, the input address
         subjectLocation = get_address_analysis(userInputAddress)
         # Extract just the Location object from the resulting dictionary
