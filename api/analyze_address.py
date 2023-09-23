@@ -33,12 +33,15 @@ class handler(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
 
-        # Get the user input **dictionary**
-        input_data = post_data.decode("utf-8")
+        # Convert the incoming bytes to a UTF-8 string
+        input_data_str = post_data.decode("utf-8")
 
-        # Get the raw user input string (address, unformatted)
+        # Convert the JSON-formatted string to a Python dictionary
+        input_data = json.loads(input_data_str)
+
+        # Now you can use .get() because input_data is a dictionary
         userInputAddress = input_data.get('address', '')
-        print("User input address (unformatted):", userInputAddress)
+        print(f"User input address: {userInputAddress}")
 
         # Geocode, and then reverse-geocode, the input address
         subjectLocation = get_address_analysis(input_data) ## this function still expects input in dictionary form...
