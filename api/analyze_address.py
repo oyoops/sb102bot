@@ -35,17 +35,18 @@ class handler(BaseHTTPRequestHandler):
         input_data = post_data.decode("utf-8")
         userInputAddress = input_data
 
-        # Get a "perfect" Location object for the input address
-        result = get_address_analysis(userInputAddress)
-        loc = result['result'].get('location', None) # Extract just the Location object from the result dictionary
+        # Geocode, then reverse-geocode, the input address
+        subjectLocation = get_address_analysis(userInputAddress)
+        # Extract just the Location object from the resulting dictionary
+        subjectLoc = subjectLocation.get('location', None)
 
-        # Get the city and county
-        if loc:
-            city, county = loc.get_city_and_county()
+        # Get city and county
+        if subjectLoc:
+            city, county = subjectLoc.get_city_and_county()
         else:
             city, county = None, None
 
-        # Look the city/county up in our max. municipal densities table
+        # Max. municipal densities table lookup
         if city:
             municipality = city
             density_value = get_density(municipality)
@@ -80,13 +81,13 @@ class handler(BaseHTTPRequestHandler):
         
         # Compose the response
         response = {
-            "address": result["result"].get("address", None),
-            "city": result["result"].get("city", None),
-            "county": result["result"].get("county", None),
-            "density": result["result"].get("density", None),
-            "walkscore": result["result"].get("walkscore", None),
-            "latitude": result["result"].get("latitude", None),
-            "longitude": result["result"].get("longitude", None)
+            "address": subjectLocation.get("address", None),
+            "city": subjectLocation.get("city", None),
+            "county": subjectLocation.get("county", None),
+            "density": subjectLocation.get("density", None),
+            "walkscore": subjectLocation.get("walkscore", None),
+            "latitude": subjectLocation.get("latitude", None),
+            "longitude": subjectLocation.get("longitude", None)
         }
 
         # Send the response to client
@@ -111,13 +112,15 @@ def get_address_analysis(input_data):
     max_density = get_density(city) if city else get_density(county)
     
     # Log results
-    print(f"\n ,--------------.---------------------------.")
-    print(f" |     RESULTS    |  Live Local Act Analysis  |")
+    print(f"\n ,----------------.---------------------------.")
+    print(f" |   RESULTS       /  Live Local Act Analysis |")
     print(f"  >---------------+---------------------------|\n")    
     print(f" |   SUBJECT:     | {userInputAddress}")
+    print(f"  >---------------+---------------------------|\n")    
     print(f" |   Lat/Long     | {round(lat, 5)}, {round(lon, 5)}")
     print(f"  >---------------+---------------------------|\n")    
-    print(f" |   City         | {city if city else 'Unknown'}\nCounty: {county if county else 'Unknown'}")    
+    print(f" |   City         | {city if city else 'Unknown'}\n")
+    print(f" |   County       | {county if county else 'Unknown'}")
     print(f" |   Max. Density | {max_density} units/ac.")
     print(f"  >---------------+---------------------------|\n")    
     print(f" |   Walkability  | {walkability_score}")
