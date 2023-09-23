@@ -110,11 +110,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             <div class="imageContainer">
                 <div class="imageItem">
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${satelliteURLInput}" alt="Google Satellite View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br></div>
                 </div>
                 <div class="imageItem">
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br></div>
                 </div>
             </div>
         `;
@@ -123,11 +123,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know ${inputCity !== '-' ? inputCity : inputCounty}'s maximum residential density.<br>This info is necessary for coming up with a unit count.</div>
-                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?<br></div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?</div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.<br><br><br></div>
+                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.</div>
             `;
         }
         
@@ -220,7 +220,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     totalUnitsElem.textContent = `Total Units      : ${totalUnits}`;
     affordableUnitsElem.textContent = `Affordable Units : ${affordableUnits}`;
-    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}<br><br><br><br>`;
+    marketRateUnitsElem.textContent = `Market Rate Units: ${marketRateUnits}<br><br><br><h1>:-)</h1>`;
 
     [totalUnitsElem, affordableUnitsElem, marketRateUnitsElem].forEach((elem, index) => {
         elem.className = 'fade-in-line';
