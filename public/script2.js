@@ -63,10 +63,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         //   |  Reverse-geocode on client side     /    (BAD FORM!!!)
         //   '------------------------------------'
 
-        // Reverse-geocode the geocoded location in order to get one with a clean, complete address (seems redundant, but it works) 
+        // "Clean" the user input address by reverse-geocoding the already-geocoded address (this should really be done server-side) 
         const inputLocationClean = await reverseGeocode(latitude, longitude);
         const inputAddressClean = inputLocationClean.formatted_address;
-        console.log("Cleaned address: ", inputAddressClean); // from reverse-geocoding the geocoded location on the client side
+        //console.log("Cleaned address: ", inputAddressClean);
+        
         // Use the cleaned Location object to get the details we need
         const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
@@ -95,14 +96,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         let resultContent = `
             <div class="imageContainer">
                 <div class="imageItem">
-                    <div class="fade-in-line"><br><u><b><h3>Your Property</h3></b></u></div>
+                    <div class="fade-in-line"><br><u><b><h3>${inputAddressClean}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">your site</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
                 <div class="imageItem">
-                    <div class="fade-in-line"><br><u><b><h3>Your Property</h3></b></u></div>
+                    <div class="fade-in-line"><br><u><b><h3>${inputAddressClean}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">your site</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
             </div>
         `;
@@ -144,8 +145,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
-        resultDiv.innerHTML = "<b>Sorry, an error occurred.</b><br><br>Try again later  :-(";
-        loadingDiv.innerHTML = "<b>Sorry, an error occurred.</b><br><br>Try again later  :-(";
+        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
+        loadingDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
     }
 });
 
