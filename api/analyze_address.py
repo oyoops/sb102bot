@@ -1,14 +1,17 @@
 from main import *
+from constants import *
 from density import get_density, density_data
 from location import Location
 from http.server import BaseHTTPRequestHandler
 import json
 
+import psycopg2
+import os
+
 ###  This endpoint accepts client POST requests to https://sb102bot/api/analyze_address
 ###  which executes ________?________ function using address input.
 
 class handler(BaseHTTPRequestHandler):
-
     def send_cors_headers(self):
         """Set headers for Cross-Origin Resource Sharing (CORS)"""
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -136,6 +139,15 @@ def get_address_analysis(userInputAddress):
     print(f" |   Walkability  | {walkability_score}")
     print(f" '----------------^---------------------------'\n")
     
+    ### ATTEMPT POSTGRESQL CONNECTION
+    conn = connect_to_database()
+    if (conn):
+        print("Connected to the PostgreSQL database  :-)")
+        conn.close()
+    else:
+        print("FAILED to connect to the PostgreSQL database  :'-(")
+    ###
+
     # Compose result dictionary
     result = {
         "address": userInputAddress,
@@ -147,6 +159,24 @@ def get_address_analysis(userInputAddress):
         "longitude": lon,
         "location": loc
     }
-
     # Return result dictionary
     return result
+
+
+# Connect to the PostGRESQL database
+def connect_to_database():
+    try:
+        conn = psycopg2.connect(
+            host="45.82.75.6",
+            port="5432",
+            dbname="sb102bot_db",
+            user="postgres",
+            password=DB_PASSWORD
+        )
+        print("Connected to the database!")
+    except Exception as e:
+        print("Unable to connect to the database.")
+        print(e)
+        
+    # Return result dictionary
+    return conn
