@@ -115,7 +115,7 @@ def get_address_analysis(input_data):
     print(f"\n ,----------------.---------------------------.")
     print(f" |   RESULTS       /  Live Local Act Analysis |")
     print(f"  >---------------+---------------------------|\n")    
-    print(f" |   SUBJECT:     | {userInputAddress}")
+    print(f" |   SUBJECT:     |", userInputAddress,"\n")
     print(f"  >---------------+---------------------------|\n")    
     print(f" |   Lat/Long     | {round(lat, 5)}, {round(lon, 5)}")
     print(f"  >---------------+---------------------------|\n")    
