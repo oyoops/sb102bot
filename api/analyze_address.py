@@ -86,8 +86,7 @@ class handler(BaseHTTPRequestHandler):
             "density": result["result"].get("density", None),
             "walkscore": result["result"].get("walkscore", None),
             "latitude": result["result"].get("latitude", None),
-            "longitude": result["result"].get("longitude", None),
-            "location": result["result"].get("loc", None),
+            "longitude": result["result"].get("longitude", None)
         }
 
         # Send the response to client
