@@ -81,8 +81,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
         const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
         // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
-        //const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
-        //console.log("Cleaned address B: ", inputAddressConstructed); // from custom reconstruction
+        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}`;
+        console.log("Constructed address: ", inputAddressConstructed); // from custom reconstruction
 
         //   .--------------------------------------,
         //   |    Prepare assets for response      /
@@ -101,12 +101,12 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         let resultContent = `
             <div class="imageContainer">
                 <div class="imageItem">
-                    <div class="fade-in-line"><br><u><b><h3>${inputAddressClean}</h3></b></u></div>
+                    <div class="fade-in-line"><br><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
                     <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
                 <div class="imageItem">
-                    <div class="fade-in-line"><br><u><b><h3>${inputAddressClean}</h3></b></u></div>
+                    <div class="fade-in-line"><br><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
                     <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
