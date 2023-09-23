@@ -101,14 +101,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // STREET VIEW & GOOGLE MAPS LINK:
         let resultContent = `
+            <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
+
             <div class="imageContainer">
                 <div class="imageItem">
-                    <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${satelliteURLInput}" alt="Google Satellite View of Your Input Address"></a></div>
                     <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
                 <div class="imageItem">
-                    <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
                     <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
                 </div>
