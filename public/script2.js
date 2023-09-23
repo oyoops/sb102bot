@@ -24,7 +24,7 @@ async function reverseGeocode(lat, lng) {
 document.getElementById('searchForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const inputAddress = document.getElementById('addressInput').value;
+    const userInputText = document.getElementById('addressInput').value;
     const resultDiv = document.getElementById('result');
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
@@ -46,7 +46,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: inputAddress }),
+            body: JSON.stringify({ address: userInputText }),
         });
 
         // Get the response from the server
