@@ -44,7 +44,7 @@ class handler(BaseHTTPRequestHandler):
         print(f"User input address: {userInputAddress}")
 
         # Geocode, and then reverse-geocode, the input address
-        subjectLocation = get_address_analysis(input_data) ## this function still expects input in dictionary form...
+        subjectLocation = get_address_analysis(userInputAddress)
         # Extract just the Location object from the resulting dictionary
         subjectLoc = subjectLocation.get('location', None)
 
@@ -106,8 +106,7 @@ class handler(BaseHTTPRequestHandler):
 
 
 # CLEAN and DETAIL location (geocodes and reverse geocodes user input)
-def get_address_analysis(input_data):
-    userInputAddress = input_data
+def get_address_analysis(userInputAddress):
 
     # Initialize the input as a Location object 
     loc = Location(userInputAddress)
