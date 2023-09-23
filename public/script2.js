@@ -174,6 +174,39 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     window.scrollTo(0, 0);
 });
 
+// Add event listener to the "Calculate Units" button
+document.getElementById('calculateUnitsButton').addEventListener('click', function() {
+    // Get the acreage value from the input field
+    const acreageValue = parseFloat(document.getElementById('acreageInput').value);
+
+    // Perform the calculations
+    const totalUnits = Math.floor(acreageValue * density);
+    const affordableUnits = Math.ceil(totalUnits * 0.4);
+    const marketRateUnits = totalUnits - affordableUnits;
+
+    // Prepare the HTML to display the results
+    let resultContent = `
+        <div class="fade-in-line">Total Units: ${totalUnits}</div>
+        <div class="fade-in-line">Affordable Units: ${affordableUnits}</div>
+        <div class="fade-in-line">Market Rate Units: ${marketRateUnits}</div>
+    `;
+
+    // Display the results in the div with id="unitCalculationResult"
+    const unitCalculationResultDiv = document.getElementById('unitCalculationResult');
+    unitCalculationResultDiv.innerHTML = resultContent;
+    
+    // Fade the response in line-by-line
+    let delayPerLine = 500; // milliseconds
+    let delay = 0;
+    const fadeInLines = unitCalculationResultDiv.querySelectorAll('.fade-in-line');
+    fadeInLines.forEach(line => {
+        setTimeout(() => {
+            line.style.opacity = '1';
+        }, delay);
+        delay += delayPerLine;
+    });
+});
+
 
 // Fade in the input box upon page load (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {

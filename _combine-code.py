@@ -13,12 +13,13 @@ def get_desktop_path():
 # --- Main code starts here --- #
 
 # List of file names to combine
-file_names = [ 
-              'public/script2.js', 'public/index.html', 'public/styles.css',
+file_names = ['public/script2.js', 'public/index.html',
               'api/analyze_address.py', 'main.py',
-              'location.py', 'building.py',
-              'density.py', 'utilities.py', 'constants.py'] # ,
-              # 'api/building_height.py', 'api/site_lookup.py']
+              # 'public/styles.css',
+              # 'location.py', 'building.py',
+              # 'density.py', 'utilities.py', 'constants.py'] # ,
+              # 'api/building_height.py', 'api/site_lookup.py'
+    ]
 
 # Output file names
 zip_file_name = '_combined_code.zip' # Output zip file name
