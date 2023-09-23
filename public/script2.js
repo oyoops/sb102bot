@@ -213,14 +213,13 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const resultDiv = document.getElementById('unitCalculationResult');
     resultDiv.innerHTML = "";
 
-    // Create a single paragraph element to display the results in a cohesive sentence
-    const resultSentence = `Based on an acreage of ${acreage}, you could potentially build ${totalUnits} total units, consisting of ${affordableUnits} affordable units and ${marketRateUnits} market-rate units. 😊`;
-    const resultElem = document.createElement('p');
-    resultElem.textContent = resultSentence;
-    resultElem.className = 'fade-in-line';
+    const cohesiveSentenceElem = document.createElement('p');
+    cohesiveSentenceElem.className = 'fade-in-line';
+    cohesiveSentenceElem.textContent = `Based on an acreage of ${acreage}, you can build approximately ${totalUnits} total units, which would consist of ${affordableUnits} affordable units and ${marketRateUnits} market rate units.`;
+
+    resultDiv.appendChild(cohesiveSentenceElem);
 
     setTimeout(() => {
-        resultElem.style.opacity = '1';
+        cohesiveSentenceElem.style.opacity = '1';
     }, 500);
-    resultDiv.appendChild(resultElem);
 });
