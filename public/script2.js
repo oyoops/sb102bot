@@ -57,7 +57,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
         // Extract the data from the response
         const { address, city, county, density, walkscore, latitude, longitude } = data;
-        //   ^----- WILL THIS BREAK IF NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE???  *****
+        //  .****.
+        //  | ^--+-- WILL THIS BREAK IF IT IS NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE??
+        //  '****'
         
         //   .--------------------------------------,
         //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
@@ -65,9 +67,12 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // "Clean" the user input address by reverse-geocoding the already-geocoded address (this should really be done server-side) 
         const inputLocationClean = await reverseGeocode(latitude, longitude);
-        const inputAddressClean = inputLocationClean.formatted_address;
+        const inputAddressClean = inputLocationClean.formatted_address;        
         //console.log("Cleaned address: ", inputAddressClean);
-        
+
+        // Print all values in address_components
+        console.log("Address components: ", inputLocationClean.address_components);
+
         // Use the cleaned Location object to get the details we need
         const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
