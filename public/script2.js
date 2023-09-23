@@ -60,33 +60,38 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             city,
             county,
             density,
+            walkscore,
             latitude,
             longitude,
             location
         }
 
+        // ---
+
         // Reverse-geocode the geocoded location in order to get one with a clean, complete address (seems redundant, but it works) 
         const inputLocationClean = await reverseGeocode(latitude, longitude);
-
         // Use this slightly-better Location object to get the details we need
+        const inputAddressClean = inputLocationClean.formatted_address;
         const inputStreetNumber = inputLocationClean.address_components.find(c => c.types[0] ==='street_number')?.short
         const inputStreetName = inputLocationClean.address_components.find(c => c.types[0] === 'route')?.short_name
         const inputCity = inputLocationClean.address_components.find(c => c.types[0] === 'locality')?.short_name
         const inputCounty = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_2')?.short_name
         const inputState = inputLocationClean.address_components.find(c => c.types[0] === 'administrative_area_level_1')?.short_name
         const inputZip = inputLocationClean.address_components.find(c => c.types[0] === 'postal_code')?.short_name
-        
         // Compose the Location's complete "address" as I want it to be shown (i.e, No city, state, zip, or country)
-        const inputAddress = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
-        console.log("Cleaned address: \n", inputAddress);
+        const inputAddressConstructed = `${inputStreetNumber ? inputStreetNumber +'' : ''}${inputStreetName ? inputStreetName + ',': ''}${inputCity ? inputCity + ',': ''}${inputCounty ? inputCounty + ',': ''}${inputState ? inputState +'' : ''}${inputZip ? inputZip : ''}`;
+        console.log("Cleaned address A: ", inputAddressClean); // from reverse geocoding the geocoded location
+        console.log("Cleaned address B: ", inputAddressConstructed); // from custom reconstruction
+
+        // ---
 
         // Compose the URLs for the Google Maps and Street View components
         const googleMapsURLInput = `https://www.google.com/maps?q=${latitude},${longitude}`;
         const streetViewURLInput = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${latitude},${longitude}&key=AIzaSyCm_XobfqV7s6bQJm0asuqZawWAYkXHN0Q`;        
 
-        //   .--------------------------------------------,
-        //   |  Construct the complete result content    /
-        //   '------------------------------------------'
+        //   .--------------------------------------,
+        //   |  Construct the complete response    /
+        //   '------------------------------------'
 
         // GOOGLE MAPS & STREET VIEW IMAGES:
         let resultContent = `
@@ -116,9 +121,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             `;
         }
         
-        //   .--------------------------------------------,
-        //   |    Display the full response to user      /
-        //   '------------------------------------------'
+        //   .------------------------------------,
+        //   |    Display the full response      /
+        //   '----------------------------------'
 
         // Set the content of the result div to our fully-generated content
         resultDiv.innerHTML = resultContent;
@@ -141,10 +146,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
-        resultDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
-        loadingDiv.innerHTML = "Sorry, an error occurred...<br>Try again later  :-(";
+        resultDiv.innerHTML = "<b>Sorry, an error occurred.</b><br><br>Try again later  :-(";
+        loadingDiv.innerHTML = "<b>Sorry, an error occurred.</b><br><br>Try again later  :-(";
     }
 });
+
 
 // Handle 'Try Again' button click
 document.getElementById('tryAgainButton').addEventListener('click', function() {
@@ -162,8 +168,8 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     window.scrollTo(0, 0);
 });
 
-// Fade in the input box upon page load
-// (adds a class to the input after the page loads to trigger the transition)
+
+// Fade in the input box upon page load (adds a class to the input after the page loads to trigger the transition)
 window.addEventListener('load', () => {
      // slight delay (100 ms) to ensure styles are applied after load
      setTimeout(() => {

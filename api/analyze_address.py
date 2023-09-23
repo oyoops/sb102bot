@@ -98,9 +98,10 @@ class handler(BaseHTTPRequestHandler):
 
 # CLEAN and DETAIL location (geocodes and reverse geocodes user input)
 def get_address_analysis(input_data):
-    
+    userInputAddress = input_data
+
     # Initialize the input as a Location object 
-    loc = Location(input_data)
+    loc = Location(userInputAddress)
         # ^ Will this fail if the address is not found / bad input? If so, would it cause the whole web app to stop functioning?
     
     # Get details of the location
@@ -114,7 +115,7 @@ def get_address_analysis(input_data):
     print(f"\n ,--------------.---------------------------.")
     print(f" |     RESULTS    |  Live Local Act Analysis  |")
     print(f"  >---------------+---------------------------|\n")    
-    print(f" |   SUBJECT:     | {input_data}")
+    print(f" |   SUBJECT:     | {userInputAddress}")
     print(f" |   Lat/Long     | {round(lat, 5)}, {round(lon, 5)}")
     print(f"  >---------------+---------------------------|\n")    
     print(f" |   City         | {city if city else 'Unknown'}\nCounty: {county if county else 'Unknown'}")    
@@ -123,9 +124,10 @@ def get_address_analysis(input_data):
     print(f" |   Walkability  | {walkability_score}")
     print(f" '----------------^---------------------------'\n")
     
+
     # Compose result dictionary
     result = {
-        "address": {input_data},
+        "address": userInputAddress,
         "city": city,
         "county": county,
         "density": max_density,
@@ -134,9 +136,6 @@ def get_address_analysis(input_data):
         "longitude": lon,
         "location": loc
     }
-
-    # (debug)
-    print("Result:", result)
 
     # Return results as a dictionary
     response = {"result": result}
