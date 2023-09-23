@@ -109,7 +109,6 @@ def get_address_analysis(input_data):
     city, county = loc.get_city_and_county()
     walkability_score = loc.get_walkability_score()
     max_density = get_density(city) if city else get_density(county)
-    ### NEED A LOC.GET ADDRESS FUNCTION TO RETURN THE FIXED ADDRESS AS A STRING
     
     # Log results
     print(f"\n ,--------------.---------------------------.")
@@ -124,7 +123,6 @@ def get_address_analysis(input_data):
     print(f" |   Walkability  | {walkability_score}")
     print(f" '----------------^---------------------------'\n")
     
-
     # Compose result dictionary
     result = {
         "address": userInputAddress,
@@ -137,6 +135,5 @@ def get_address_analysis(input_data):
         "location": loc
     }
 
-    # Return results as a dictionary
-    response = {"result": result}
-    return response
+    # Return result dictionary
+    return result
