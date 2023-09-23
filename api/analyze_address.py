@@ -135,6 +135,9 @@ def get_address_analysis(input_data):
         "location": loc
     }
 
+    # (debug)
+    print("Result:", result)
+
     # Return results as a dictionary
     response = {"result": result}
     return response
