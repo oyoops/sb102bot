@@ -32,14 +32,16 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
+
+        # Get the user input **dictionary**
         input_data = post_data.decode("utf-8")
-        userInputAddress = input_data
 
-        print("Debugging: input_data:", input_data)
-        print("User input address:", userInputAddress)
+        # Get the raw user input string (address, unformatted)
+        userInputAddress = input_data.get('address', '')
+        print("User input address (unformatted):", userInputAddress)
 
-        # Geocode, then reverse-geocode, the input address
-        subjectLocation = get_address_analysis(userInputAddress)
+        # Geocode, and then reverse-geocode, the input address
+        subjectLocation = get_address_analysis(input_data) ## this function still expects input in dictionary form...
         # Extract just the Location object from the resulting dictionary
         subjectLoc = subjectLocation.get('location', None)
 
