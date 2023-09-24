@@ -1,4 +1,10 @@
 ### File: public/script2.js\nconst mainHeader = document.getElementById('mainHeader');
+let minAffordablePercent = 0.4;
+let globalDensity = null; // global variable to store the density value for later use in the unit calculations
+let globalTotalUnits = null; // global variable to store the total unit count for later use in the unit calculations
+let globalAffordableUnits = null; // global variable to store the affordable unit count for later use in the unit calculations
+let globalMarketRateUnits = null; // global variable to store the market rate unit count for later use in the unit calculations
+
 
 async function reverseGeocode(lat, lng) {
     const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
@@ -29,12 +35,16 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
     const loadingDiv = document.querySelector('.loading');
+    const calculateUnitsButton = document.getElementById('calculateUnitsButton');
+    const acreageSection = document.getElementById('acreageSection');
+
 
     // hide the initial content
     mainHeader.style.display = 'none';
     initialContent.style.display = 'none';
     // Show the loading indicator
     loadingDiv.style.display = 'block';
+    
     // Reset the result div opacity to 0 to achieve the fade-in effect on new data
     resultDiv.style.opacity = 0;
 
@@ -60,7 +70,10 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         //  .****.
         //  | ^--+-- WILL THIS BREAK IF IT IS NOT PERFECTLY MAPPED OUT TO THE ENDPOINT'S RESPONSE??
         //  '****'
-        
+
+        // Set the globalDensity variable to the density from the response
+        globalDensity = density;        
+
         //   .--------------------------------------,
         //   |  Reverse-geocode on client side     /    (THIS IS BAD FORM! It should be done serverside!)
         //   '------------------------------------'
@@ -106,11 +119,11 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             <div class="imageContainer">
                 <div class="imageItem">
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${satelliteURLInput}" alt="Google Satellite View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br></div>
                 </div>
                 <div class="imageItem">
                     <div class="fade-in-line"><a href="${googleMapsURLInput}" target="_blank"><img src="${streetViewURLInput}" alt="Google Street View of Your Input Address"></a></div>
-                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br><br></div>
+                    <div class="fade-in-line">See <a href="${googleMapsURLInput}" target="_blank">property</a> in Google Maps<br></div>
                 </div>
             </div>
         `;
@@ -119,13 +132,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         if (!density || density <= 0) {
             resultContent += `
                 <div class="fade-in-line"><br>Unfortunately, I don't know ${inputCity !== '-' ? inputCity : inputCounty}'s maximum residential density.<br>This info is necessary for coming up with a unit count.</div>
-                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?<br></div>
+                <div class="fade-in-line">Cheer up, though, because I've just added your property to the list of cities and counties to someday add. Check back next week?</div>
             `;
         } else {
             resultContent += `
-                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.<br><br><br></div>
+                <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.</div>
             `;
         }
+        resultContent += `<br><br>`;
         
         //   .------------------------------------,
         //   |    Display the full response      /
@@ -145,15 +159,42 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             }, delay);
             delay += delayPerLine;
         });
+        
+        // Append the "Try Again" button to the result div
+        resultDiv.appendChild(document.getElementById('tryAgainButton'));
+
         // Hide loading indicator
         loadingDiv.style.display = 'none';
+
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
+        tryAgainButton.style.opacity = '1'; // Add this line
 
+        // Show the acreage input section after analysis is complete
+        document.getElementById('acreageSection').style.display = 'block';
+
+        ////const acreageInput = document.getElementById('acreageInput');        
+        calculateUnitsButton.style.display = 'block';
+        calculateUnitsButton.style.opacity = '1';
+
+        //------------------------------------------------------------------------------------
+        // Debugging: Print out the values of the global variables (DOM sections) 
+        console.log("Loading Indicator Display: ", window.getComputedStyle(tryAgainButton).display);
+        console.log("Try Again Button Display: ", window.getComputedStyle(tryAgainButton).display);
+        console.log("Acreage Section Display: ", window.getComputedStyle(acreageSection).display);
+        //------------------------------------------------------------------------------------
+
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // ...
+        // ...
+        // ...
+        
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
-        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
-        loadingDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
+        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later...<br>";
+        loadingDiv.innerHTML = "<h3>:'-(<br></h3>";
     }
 });
 
@@ -164,6 +205,7 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
     const mainHeader = document.getElementById('mainHeader');
+    
     // Hide results and "Try Again" button
     resultDiv.style.opacity = '0';
     tryAgainButton.style.display = 'none';
@@ -183,6 +225,143 @@ window.addEventListener('load', () => {
         input.style.opacity = 1;
         input.style.transform = 'translateY(0)';
     }, 100);
+});
+
+
+// Event listener for the Calculate Units button
+document.getElementById('calculateUnitsButton').addEventListener('click', function() {
+    const acreage = parseFloat(document.getElementById('acreageInput').value);
+    if (isNaN(acreage)) {
+        alert("Please enter a valid acreage.");
+        return;
+    }
+
+    // Store the total/affordable/market unit counts in a global variable for later use
+    const totalUnits = Math.floor(acreage * globalDensity); // Use the globalDensity variable
+    globalTotalUnits = totalUnits; // Store the total units in a global variable for later use  
+    const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
+    globalAffordableUnits = affordableUnits; // Store the affordable units in a global variable for later use
+    const marketRateUnits = totalUnits - affordableUnits;
+    globalMarketRateUnits = marketRateUnits; // Store the market rate units in a global variable for later use
+
+    // Clear previous results if any
+    const resultDiv = document.getElementById('unitCalculationResult');
+    resultDiv.innerHTML = "";
+
+    // Create a single cohesive sentence
+    const cohesiveSentenceElem = document.createElement('p');
+    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
+
+    // Apply the 'fade-in-line' class for the fade-in effect
+    cohesiveSentenceElem.className = 'fade-in-line';
+
+    // Append the sentence to the result div
+    resultDiv.appendChild(cohesiveSentenceElem);
+
+    // Apply the fade-in effect
+    setTimeout(() => {
+        cohesiveSentenceElem.style.opacity = '1';
+    }, 500);
+
+    // Scroll to the bottom of the page
+    window.scrollTo(0, document.body.scrollHeight);
+
+    // ---
+    
+    // Clear previous bedroom type inputs if any
+    const bedroomTypeInputDiv = document.getElementById('bedroomTypeInputDiv');
+    bedroomTypeInputDiv.innerHTML = ``;
+
+    // Generate inputs for the new section
+    const generateBedroomTypeInputs = (label) => {
+        return `
+            <div class="bedroomTypeInputGroup">
+                <label>${label}</label>
+                <input type="number" placeholder="10" class="${label.toLowerCase()}Input studio" data-bedroom="Studio">
+                <input type="number" placeholder="45" class="${label.toLowerCase()}Input oneBd" data-bedroom="1BD">
+                <input type="number" placeholder="35" class="${label.toLowerCase()}Input twoBd" data-bedroom="2BD">
+                <input type="number" placeholder="10" class="${label.toLowerCase()}Input threeBd" data-bedroom="3BD">
+                <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
+            </div>
+        `;
+    };    
+
+    const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
+
+    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
+    // Show the new section
+    bedroomTypeInputDiv.style.display = 'block';
+    bedroomTypeInputDiv.style.opacity = '1';
+    
+    // Scroll to the bottom of the page
+    window.scrollTo(0, document.body.scrollHeight);
+
+    // ...
+    // ...
+    // ...
+
+});
+
+// Scroll to the bottom of the page
+window.scrollTo(0, document.body.scrollHeight);
+
+// Add a new event listener for the "Submit Bedroom Types" button
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'submitBedroomTypes') {
+        // Validate the bedroom type inputs here
+        // ...
+        // ...
+        // ...
+
+        // If validation passes, convert the percentages to unit counts
+        const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
+        const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
+
+        // Debugging: Print out the intermediate arrays and global variables
+        console.log('Affordable Inputs:', affordableInputs);
+        console.log('Market Rate Inputs:', marketRateInputs);
+        console.log('Global Market Rate Units:', globalMarketRateUnits);
+        console.log('Global Affordable Units:', globalAffordableUnits);
+
+        const affordableUnitCounts = affordableInputs.map(input => {
+            const value = Number(input.value);
+            return !isNaN(value) ? Math.round(globalAffordableUnits * (value / 100)) : 'N/A';
+        });
+        const marketRateUnitCounts = marketRateInputs.map(input => {
+            const value = Number(input.value);
+            return !isNaN(value) ? Math.round(globalMarketRateUnits * (value / 100)) : 'N/A';
+        });
+
+        // Debugging: Print out the unit counts
+        console.log('Affordable Unit Counts:', affordableUnitCounts);
+        console.log('Market Rate Unit Counts:', marketRateUnitCounts);
+
+        // Create a table to display the unit counts
+        let tableHTML = '<p>Units by bedroom type:</p>';
+        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market Rate</th></tr></thead><tbody>';
+        
+        const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
+        for (let i = 0; i < bedroomTypes.length; i++) {
+            tableHTML += `<tr><td>${bedroomTypes[i]}</td><td>${affordableUnitCounts[i]}</td><td>${marketRateUnitCounts[i]}</td></tr>`;
+        }
+
+        tableHTML += '</tbody></table>';
+        
+        // Append the table to the bedroomTypeInputDiv
+        const tableDiv = document.createElement('div');
+        tableDiv.innerHTML = tableHTML;
+        document.getElementById('bedroomTypeInputDiv').appendChild(tableDiv);
+        
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // ...
+        // ...
+        // ...
+
+    }
 });\n--------------------------------------------------\n### File: public/index.html\n<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -226,17 +405,41 @@ window.addEventListener('load', () => {
         </p>
     </div>
     <div id="result">
-        <div class="imageContainer">
+            <div class="imageContainer">
             <div id="inputAddressImage" class="imageItem"></div>
             <div id="tallestBuildingImage" class="imageItem"></div>
         </div>
     </div>
+
+    <!--- Loading indicator -->
     <div class="loading">Conducting due diligence</div>
-    <footer>
-    </footer>
+    
+    <!-- Footer -->
+    <!-- <footer> -->
+    <!--</footer> -->
+    
+    <!-- Try Again button -->
     <button id="tryAgainButton" style="display: none;">
-        <b>Search for another property</b>
+        <b>Search for a different property</b>
     </button>
+    
+    <!-- Acreage input -->
+    <div id="acreageSection" style="display: none;">
+        <br><br>
+        <p>What's the acreage of the property?</p>
+        <input type="number" id="acreageInput" placeholder="Acreage">
+        <button id="calculateUnitsButton">Find unit count</button>
+        <div id="unitCalculationResult"></div>
+    </div>
+
+    <!-- Bedroom type inputs -->
+    <div id="bedroomTypeInputDiv" style="display: none;"></div>
+
+    <!-- Unit count result (???) -->
+    <div id="unitCountResult" style="display: none;"></div>
+
+
+    <!-- Run scripts -->
     <script src="script2.js"></script>
     <!-- <script src="addressAnalysis.js"></script> -->
     <!-- <script src="additionalContent.js"></script> -->
@@ -422,172 +625,4 @@ def connect_to_database():
         print("Unable to connect to the database.")
         print(e)
     return conn
-\n--------------------------------------------------\n### File: main.py\nfrom location import Location
-from building import Building
-from density import get_density
-from constants import FEET_IN_STORY, DEFAULT_RADIUS_IN_MILES, METERS_IN_MILE
-
-# "Main" function of the /building_height endpoint
-# (trying to deprecate now)
-def get_building_height_from_input(input_data):
-    # Get location object
-    loc = Location(input_data)
-    lat, lon = get_location_coordinates(input_data, loc)
-    city, county = loc.get_city_and_county()
-
-    # Get building object
-    building_obj = Building(lat, lon)
-
-    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
-    print(f"\nSUBJECT PROPERTY:")
-    print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
-    print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
-
-    # Get top buildings
-    top_buildings = get_top_buildings(building_obj)
-    print_top_buildings(top_buildings, building_obj)
-
-    # Get approx. stories
-    tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
-    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
-    print(f"Approx. stories: {approx_stories}")
-
-    # Get walkability score
-    walkability_score = loc.get_walkability_score()
-    print(f"\nWalkability Score: {walkability_score}")
-
-    # Get max density in municipality
-    max_density = get_density(city) if city else get_density(county)
-    
-    # Log results
-    print(f"\n .--------------------------------------------------------------------------------.")
-    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
-    print(f" '--------------------------------------------------------------------------------'\n\n")
-    
-    # Collect results
-    result = {
-        "height": tallest_building_details.get('height', 'Unknown'),
-        "address": tallest_building_details.get('address', 'Unknown'),
-        "latitude": tallest_building_details.get('latitude', 'Unknown'),
-        "longitude": tallest_building_details.get('longitude', 'Unknown'),
-        "city": city,
-        "county": county,
-        "density": max_density,
-        "distance": tallest_building_details.get('distance', 'Unknown'),
-        "building_name": tallest_building_details.get('name', 'Unknown'),
-        "location": loc
-    }
-
-    # Return results dictionary
-    response = {"result": result}
-    return response
-
-
-# ---
-
-
-# Determine if user input is in lat,lng format or an address and geocode if necessary
-def get_location_coordinates(input_data, loc_obj):
-    try:
-        lat, lon = map(float, input_data.split(','))
-        print(f"Input Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
-    except ValueError:
-        lat, lon = loc_obj.geocode_address()
-        print(f"Geocoded Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
-    return lat, lon
-
-# Function to get top buildings
-def get_top_buildings(building_obj):
-    buildings = building_obj.get_building_heights()
-    return sorted(buildings, key=lambda x: float(x['height']), reverse=True)[:3]
-
-# Function to print top buildings
-def print_top_buildings(top_buildings, building_obj):
-    for idx, building in enumerate(top_buildings):
-        building_details = building_obj.get_detailed_building_info(building)
-        print(f"\n  #{idx + 1}  Name:        {building_details['name']}")
-        print(f"      Height:      {building_details['height']} feet")
-        print(f"      Address:     {building_details['address']}")
-        print(f"      Lat, Long:   {building_details['latitude']}, {building_details['longitude']}")
-        print(f"      Distance:    {building_details['distance']} mi.")
-
-# Function to get tallest building details
-def get_tallest_building_details(buildings, building_obj):
-    tallest_building = max(buildings, key=lambda x: float(x['height']))
-    tallest_building_info = building_obj.get_building_info(tallest_building['id'], tallest_building['type'])
-    tallest_bldg_name = tallest_building_info.get('Tags', {}).get('name', "Unknown")
-    tallest_bldg_address = f"{tallest_building_info.get('Tags', {}).get('addr:housenumber', '-')}, {tallest_building_info.get('Tags', {}).get('addr:street', '')}"
-    tallest_geometry = building_obj.fetch_geometry(tallest_building['id'], tallest_building['type'])
-    tallest_building_lat, tallest_building_lon = tallest_geometry[0] if tallest_geometry and len(tallest_geometry) > 0 else (None, None)
-    distance = Location.haversine_distance(building_obj.latitude, building_obj.longitude, tallest_building_lat, tallest_building_lon) if tallest_building_lat is not None and tallest_building_lon is not None else None
-    distance = round(distance, 2) if distance else None
-    
-    return {
-        "height": int(round(float(tallest_building['height']))),
-        "address": tallest_bldg_address,
-        "latitude": tallest_building_lat,
-        "longitude": tallest_building_lon,
-        "distance": distance,
-        "building_name": tallest_bldg_name
-    }
-
-
-# ---
-
-
-# Main script
-def main(input_data):
-
-    # Get location object
-    loc = Location(input_data)
-    lat, lon = get_location_coordinates(input_data, loc)
-    city, county = loc.get_city_and_county()
-
-    # Get building object
-    building_obj = Building(lat, lon)
-
-    print(f"\n--------------------------------------------------------------------------------------\n\nSEARCHING...")
-    print(f"\nSUBJECT PROPERTY:")
-    print(f"Lat/Long: {round(lat, 5)}, {round(lon, 5)}")
-    print(f"City: {city if city else 'Unknown'}, County: {county if county else 'Unknown'}\n")
-
-    # Get top buildings
-    top_buildings = get_top_buildings(building_obj)
-    print_top_buildings(top_buildings, building_obj)
-
-    # Get approx. stories
-    tallest_building_details = get_tallest_building_details(top_buildings, building_obj)
-    approx_stories = int(tallest_building_details['height'] / FEET_IN_STORY)
-    print(f"Approx. stories: {approx_stories}")
-
-    # Get walkability score
-    walkability_score = loc.get_walkability_score()
-    print(f"\nWalkability Score: {walkability_score}")
-
-    # Get max density in municipality
-    max_density = get_density(city) if city else get_density(county)
-    
-    # Log results
-    print(f"\n .--------------------------------------------------------------------------------.")
-    print(f" |  Live Local Act allows for a building height of up to {round(approx_stories * FEET_IN_STORY,0)} feet (~{approx_stories} stories)   |")
-    print(f" '--------------------------------------------------------------------------------'\n\n")
-    
-    # Return results
-    return {
-        "height": tallest_building_details.get('height', 'Unknown'),
-        "address": tallest_building_details.get('address', 'Unknown'),
-        "latitude": tallest_building_details.get('latitude', 'Unknown'),
-        "longitude": tallest_building_details.get('longitude', 'Unknown'),
-        "city": city,
-        "county": county,
-        "density": max_density,
-        "distance": tallest_building_details.get('distance', 'Unknown'),
-        "building_name": tallest_building_details.get('name', 'Unknown'),
-        "location": loc
-    }
-
-
-# Script entry point
-if __name__ == '__main__':
-    main()
 \n--------------------------------------------------\n

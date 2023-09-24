@@ -241,8 +241,10 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     globalTotalUnits = totalUnits; // Store the total units in a global variable for later use  
     const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
     globalAffordableUnits = affordableUnits; // Store the affordable units in a global variable for later use
+    console.log('Global Affordable Units:', globalAffordableUnits);
     const marketRateUnits = totalUnits - affordableUnits;
     globalMarketRateUnits = marketRateUnits; // Store the market rate units in a global variable for later use
+    console.log('Global Market Rate Units:', globalMarketRateUnits);
 
     // Clear previous results if any
     const resultDiv = document.getElementById('unitCalculationResult');
