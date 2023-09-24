@@ -122,17 +122,6 @@ footer a:hover {
     text-decoration: underline;
 }
 
-#tryAgainButton {
-    position: fixed;
-    bottom: 20px; /* Push it a bit up from the bottom */
-    left: 50%;
-    font-weight: 500; 
-    transform: translateX(-50%);
-    background-color: #afc6ed;
-    color: #333;
-    z-index: 1001; /* Make sure it's above other elements */
-}
-
 #result {
     transition: opacity 0.5s;
     width: 80vw;
@@ -215,7 +204,7 @@ img {
     background-color: #afc6ed;
     color: #333;
     /* Add any other styles you want when the button is not fixed */
-    margin-top: 20px; /* Add some top margin */
+    margin-top: 0px; /* Add some top margin */
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
 }
