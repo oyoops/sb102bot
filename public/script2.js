@@ -42,11 +42,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     // Show the loading indicator
     loadingDiv.style.display = 'block';
     
-
-    // testing______________________________________________________________________________________
-    // Append the "Try Again" button to the result div
-    resultDiv.appendChild(document.getElementById('tryAgainButton'));
-
     // Reset the result div opacity to 0 to achieve the fade-in effect on new data
     resultDiv.style.opacity = 0;
 
@@ -151,8 +146,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
-//        // Append the "Try Again" button to the result div
-//        resultDiv.appendChild(document.getElementById('tryAgainButton'));
+        // Append the "Try Again" button to the result div
+        resultDiv.appendChild(document.getElementById('tryAgainButton'));
 
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
@@ -175,15 +170,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Scroll to the top of the page
         window.scrollTo(0, 0); // ???
 
-        // 
-
-
-
-
-
-
-
-
+        // ...
+        // ...
+        // ...
         
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
@@ -199,6 +188,7 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
     const mainHeader = document.getElementById('mainHeader');
+    
     // Hide results and "Try Again" button
     resultDiv.style.opacity = '0';
     tryAgainButton.style.display = 'none';
