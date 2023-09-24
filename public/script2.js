@@ -146,9 +146,6 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
-        // Append the "Try Again" button to the result div
-        resultDiv.appendChild(document.getElementById('tryAgainButton'));
-
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
         let delay = 0;
@@ -160,6 +157,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             delay += delayPerLine;
         });
         
+        // Append the "Try Again" button to the result div
+        resultDiv.appendChild(document.getElementById('tryAgainButton'));
+
         // Hide loading indicator
         loadingDiv.style.display = 'none';
         // Show "Try Again" button
@@ -177,8 +177,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
-        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
-        loadingDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
+        resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later...<br>";
+        loadingDiv.innerHTML = "<h3>:'-(<br></h3>";
     }
 });
 
