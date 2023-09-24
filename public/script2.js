@@ -329,6 +329,9 @@ document.addEventListener('click', function(e) {
 
         tableHTML += '</tbody></table>';
         
+        // Erase current bedroom type inputs //
+        document.getElementById('bedroomTypeInputDiv').innerHTML = '';
+
         // Append the table to the bedroomTypeInputDiv
         const tableDiv = document.createElement('div');
         tableDiv.innerHTML = tableHTML;
