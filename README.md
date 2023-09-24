@@ -1,5 +1,5 @@
 # SB102Bot :house_with_garden: :construction_worker:
-## **NOTE: This entire README was written by ChatGPT.**
+**NOTE: This entire README was written by ChatGPT.**
 
 ## Introduction
 SB102Bot is a Flask-based web application designed for real estate developers in South Florida. It allows you to enter an address and magically reveals the maximum allowable development intensity for multifamily construction at that address. Yup, it's like having your own underwriting assistant who never sleeps.
