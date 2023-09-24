@@ -270,7 +270,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     };    
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', affordableUnits);
-    const marketRateInputGroup = generateBedroomTypeInputs('Market', marketRateUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', marketRateUnits);
 
     bedroomTypeInputDiv.innerHTML = `<h3>Apportion the unit mix:</h3>${affordableInputGroup}${marketRateInputGroup}`;
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Submit unit mix</button>';
@@ -320,7 +320,7 @@ document.addEventListener('click', function(e) {
 
         // Create a table to display the unit counts
         let tableHTML = '<h3>Units by bedroom count:</h3>';
-        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market</th></tr></thead><tbody>';
+        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market Rate</th></tr></thead><tbody>';
         
         const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
         for (let i = 0; i < bedroomTypes.length; i++) {
