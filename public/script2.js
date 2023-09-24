@@ -282,17 +282,18 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Generate inputs for the new section
     const generateBedroomTypeInputs = (label) => {
+        const inputClass = label.replace(' ', '').toLowerCase() + 'Input'; // 'affordableInput' or 'marketRateInput'
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
-                <input type="number" placeholder="10" class="${label.toLowerCase()}Input studio" data-bedroom="Studio">
-                <input type="number" placeholder="45" class="${label.toLowerCase()}Input oneBd" data-bedroom="1BD">
-                <input type="number" placeholder="35" class="${label.toLowerCase()}Input twoBd" data-bedroom="2BD">
-                <input type="number" placeholder="10" class="${label.toLowerCase()}Input threeBd" data-bedroom="3BD">
+                <input type="number" placeholder="10" class="${inputClass}" data-bedroom="Studio">
+                <input type="number" placeholder="45" class="${inputClass}" data-bedroom="1BD">
+                <input type="number" placeholder="35" class="${inputClass}" data-bedroom="2BD">
+                <input type="number" placeholder="10" class="${inputClass}" data-bedroom="3BD">
                 <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
             </div>
         `;
-    };    
+    };
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
