@@ -1,4 +1,4 @@
-> **This entire README was written by ChatGPT.**
+**This entire README was written by ChatGPT.**
 
 # SB102Bot :house_with_garden: :construction_worker:
 
