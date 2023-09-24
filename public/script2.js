@@ -41,6 +41,12 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     initialContent.style.display = 'none';
     // Show the loading indicator
     loadingDiv.style.display = 'block';
+    
+
+    // testing______________________________________________________________________________________
+    // Append the "Try Again" button to the result div
+    resultDiv.appendChild(document.getElementById('tryAgainButton'));
+
     // Reset the result div opacity to 0 to achieve the fade-in effect on new data
     resultDiv.style.opacity = 0;
 
@@ -135,6 +141,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
                 <div class="fade-in-line"><br>The maximum allowed residential density anywhere in ${inputCity !== '-' ? inputCity : inputCounty} is ${density} units/acre, so a Live Local-qualifying development here could match that.</div>
             `;
         }
+        resultContent += `<br><br>`;
         
         //   .------------------------------------,
         //   |    Display the full response      /
@@ -144,8 +151,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
-        // Append the "Try Again" button to the result div
-        resultDiv.appendChild(document.getElementById('tryAgainButton'));
+//        // Append the "Try Again" button to the result div
+//        resultDiv.appendChild(document.getElementById('tryAgainButton'));
 
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
