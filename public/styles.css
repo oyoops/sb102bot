@@ -209,6 +209,8 @@ img {
     color: #333;
     /* Add any other styles you want when the button is not fixed */
     margin-top: 0px; /* Add some top margin */
+    width: 200px; /* Adjust width */
+    padding: 5px 10px;
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
 
