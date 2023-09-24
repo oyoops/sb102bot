@@ -196,8 +196,9 @@ img {
 #calculateUnitsButton {
     width: auto;  /* Adjust width */
     padding: 5px 10px;
-    background-color: #9467a0;
-
+    background-color: #4c85cf;
+    align-items: center;
+    text-align: center;
     opacity: 0;
     transition: opacity 0.5s;
 }
