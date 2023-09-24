@@ -219,13 +219,12 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         return;
     }
 
-    const totalUnits = Math.floor(acreage * globalDensity); // Use the globalDensity variable
-    const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
-    const marketRateUnits = totalUnits - affordableUnits;
-
     // Store the total/affordable/market unit counts in a global variable for later use
+    const totalUnits = Math.floor(acreage * globalDensity); // Use the globalDensity variable
     globalTotalUnits = totalUnits; // Store the total units in a global variable for later use  
+    const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
     globalAffordableUnits = affordableUnits; // Store the affordable units in a global variable for later use
+    const marketRateUnits = totalUnits - affordableUnits;
     globalMarketRateUnits = marketRateUnits; // Store the market rate units in a global variable for later use
 
     // Clear previous results if any
@@ -294,14 +293,30 @@ window.scrollTo(0, document.body.scrollHeight);
 document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'submitBedroomTypes') {
         // Validate the bedroom type inputs here
-        // ... (existing validation code)
+        // ...
+        // ...
+        // ...
 
         // If validation passes, convert the percentages to unit counts
         const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
         const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
         
-        const affordableUnitCounts = affordableInputs.map(input => Math.round(globalAffordableUnits * (Number(input.value) / 100)));
-        const marketRateUnitCounts = marketRateInputs.map(input => Math.round(globalMarketRateUnits * (Number(input.value) / 100)));
+        // Debugging: Print out the intermediate arrays
+        console.log('Affordable Inputs:', affordableInputs);
+        console.log('Market Rate Inputs:', marketRateInputs);
+
+        const affordableUnitCounts = affordableInputs.map(input => {
+            const value = Number(input.value);
+            return !isNaN(value) ? Math.round(globalAffordableUnits * (value / 100)) : 'N/A';
+        });
+        const marketRateUnitCounts = marketRateInputs.map(input => {
+            const value = Number(input.value);
+            return !isNaN(value) ? Math.round(globalMarketRateUnits * (value / 100)) : 'N/A';
+        });
+
+        // Debugging: Print out the unit counts
+        console.log('Affordable Unit Counts:', affordableUnitCounts);
+        console.log('Market Rate Unit Counts:', marketRateUnitCounts);
 
         // Create a table to display the unit counts
         let tableHTML = '<h3>Units by bedroom count:</h3>';
@@ -313,10 +328,13 @@ document.addEventListener('click', function(e) {
         }
 
         tableHTML += '</tbody></table>';
-
+        
         // Append the table to the bedroomTypeInputDiv
         const tableDiv = document.createElement('div');
         tableDiv.innerHTML = tableHTML;
         document.getElementById('bedroomTypeInputDiv').appendChild(tableDiv);
+        
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
     }
 });
