@@ -269,8 +269,8 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         `;
     };    
 
-    const affordableInputGroup = generateBedroomTypeInputs('Affordable', affordableUnits);
-    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', marketRateUnits);
+    const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
 
     bedroomTypeInputDiv.innerHTML = `<h3>Apportion the unit mix:</h3>${affordableInputGroup}${marketRateInputGroup}`;
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Submit unit mix</button>';
@@ -329,9 +329,6 @@ document.addEventListener('click', function(e) {
 
         tableHTML += '</tbody></table>';
         
-        // Erase current bedroom type inputs //
-        document.getElementById('bedroomTypeInputDiv').innerHTML = '';
-
         // Append the table to the bedroomTypeInputDiv
         const tableDiv = document.createElement('div');
         tableDiv.innerHTML = tableHTML;
@@ -339,5 +336,10 @@ document.addEventListener('click', function(e) {
         
         // Scroll to the bottom of the page
         window.scrollTo(0, document.body.scrollHeight);
+
+        // ...
+        // ...
+        // ...
+
     }
 });
