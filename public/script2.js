@@ -35,6 +35,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     const initialContent = document.getElementById('initialContent');
     const tryAgainButton = document.getElementById('tryAgainButton');
     const loadingDiv = document.querySelector('.loading');
+    const calculateUnitsButton = document.getElementById('calculateUnitsButton');
+    const acreageSection = document.getElementById('acreageSection');
+    
 
     // hide the initial content
     mainHeader.style.display = 'none';
@@ -162,17 +165,24 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // Hide loading indicator
         loadingDiv.style.display = 'none';
-        console.log("Loading Indicator Display: ", window.getComputedStyle(tryAgainButton).display);
 
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
         tryAgainButton.style.opacity = '1'; // Add this line
-        console.log("Try Again Button Display: ", window.getComputedStyle(tryAgainButton).display);
 
         // Show the acreage input section after analysis is complete
         document.getElementById('acreageSection').style.display = 'block';
-        console.log("Acreage Section Display: ", window.getComputedStyle(acreageSection).display);
 
+        ////const acreageInput = document.getElementById('acreageInput');        
+        calculateUnitsButton.style.display = 'block';
+        calculateUnitsButton.style.opacity = '1';
+
+        //------------------------------------------------------------------------------------
+        // Debugging: Print out the values of the global variables (DOM sections) 
+        console.log("Loading Indicator Display: ", window.getComputedStyle(tryAgainButton).display);
+        console.log("Try Again Button Display: ", window.getComputedStyle(tryAgainButton).display);
+        console.log("Acreage Section Display: ", window.getComputedStyle(acreageSection).display);
+        //------------------------------------------------------------------------------------
 
         // Scroll to the bottom of the page
         window.scrollTo(0, document.body.scrollHeight);
@@ -240,7 +250,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Create a single cohesive sentence
     const cohesiveSentenceElem = document.createElement('p');
-    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
+    cohesiveSentenceElem.textContent = `<br>Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
 
     // Apply the 'fade-in-line' class for the fade-in effect
     cohesiveSentenceElem.className = 'fade-in-line';
@@ -260,7 +270,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     
     // Clear previous bedroom type inputs if any
     const bedroomTypeInputDiv = document.getElementById('bedroomTypeInputDiv');
-    bedroomTypeInputDiv.innerHTML = "";
+    bedroomTypeInputDiv.innerHTML = ``;
 
     // Generate inputs for the new section
     const generateBedroomTypeInputs = (label) => {
@@ -279,10 +289,11 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
 
-    bedroomTypeInputDiv.innerHTML = `<h3>Apportion the unit mix:</h3>${affordableInputGroup}${marketRateInputGroup}`;
-    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Submit unit mix</button>';
+    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
+    bedroomTypeInputDiv.style.opacity = '1';
     
     // Scroll to the bottom of the page
     window.scrollTo(0, document.body.scrollHeight);
