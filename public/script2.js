@@ -283,6 +283,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     // Generate inputs for the new section
     const generateBedroomTypeInputs = (label) => {
         const inputClass = label.replace(' ', '').toLowerCase() + 'Input'; // 'affordableInput' or 'marketRateInput'
+        const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketRateTotalPercentage'
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
@@ -290,13 +291,17 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
                 <input type="number" placeholder="45" class="${inputClass}" data-bedroom="1BD">
                 <input type="number" placeholder="35" class="${inputClass}" data-bedroom="2BD">
                 <input type="number" placeholder="10" class="${inputClass}" data-bedroom="3BD">
-                <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
+                <span>Total: <span id="${totalPercentageId}">0</span>%</span>
             </div>
         `;
     };
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
+
+    // Attach event listeners to update percentage totals in real-time
+    attachPercentageUpdateListeners('affordableInput', 'affordableTotalPercentage');
+    attachPercentageUpdateListeners('marketRateInput', 'marketRateTotalPercentage');
 
     bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
@@ -372,3 +377,22 @@ document.addEventListener('click', function(e) {
 
     }
 });
+
+
+// Function to attach event listeners to input fields for real-time percentage updates
+function attachPercentageUpdateListeners(inputClass, totalPercentageId) {
+    const inputs = document.querySelectorAll(`.${inputClass}`);
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            let totalPercentage = 0;
+            inputs.forEach(inputField => {
+                const value = parseFloat(inputField.value);
+                if (!isNaN(value)) {
+                    totalPercentage += value;
+                }
+            });
+            document.getElementById(totalPercentageId).textContent = totalPercentage.toFixed(2);
+        });
+    });
+}
+
