@@ -144,6 +144,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
+        // Append the "Try Again" button to the result div
+        resultDiv.appendChild(document.getElementById('tryAgainButton'));
+
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
         let delay = 0;

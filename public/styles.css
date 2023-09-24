@@ -209,11 +209,12 @@ img {
     padding: 10px 20px;
 }
 
-
-/* Specific style for the "Try Again" button */
 #tryAgainButton {
-    width: auto; /* Resets the width */
-    padding: 10px 20px; /* Adjust padding */
+    /* Remove the position, bottom, and left properties */
+    font-weight: 500; 
+    background-color: #afc6ed;
+    color: #333;
+    /* Add any other styles you want when the button is not fixed */
     margin-top: 20px; /* Add some top margin */
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
