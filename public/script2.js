@@ -37,7 +37,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
     const loadingDiv = document.querySelector('.loading');
     const calculateUnitsButton = document.getElementById('calculateUnitsButton');
     const acreageSection = document.getElementById('acreageSection');
-    
+
 
     // hide the initial content
     mainHeader.style.display = 'none';
@@ -250,7 +250,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Create a single cohesive sentence
     const cohesiveSentenceElem = document.createElement('p');
-    cohesiveSentenceElem.textContent = `<br>Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
+    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
 
     // Apply the 'fade-in-line' class for the fade-in effect
     cohesiveSentenceElem.className = 'fade-in-line';
