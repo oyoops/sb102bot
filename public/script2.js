@@ -282,8 +282,9 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Generate inputs for the new section
     const generateBedroomTypeInputs = (label) => {
-        const inputClass = label.replace(' ', '').toLowerCase() + 'Input'; // 'affordableInput' or 'marketRateInput'
-        const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketRateTotalPercentage'
+        const inputClass = label.replace(' ', '').toLowerCase() + 'Input'; // 'affordableInput' or 'marketInput'
+        ////const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketTotalPercentage'
+        const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketTotalPercentage'
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
@@ -297,14 +298,14 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     };
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
-    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market', globalMarketRateUnits);
 
     bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
 
     // Attach event listeners to update percentage totals in real-time
     attachPercentageUpdateListeners('affordableInput', 'affordableTotalPercentage');
-    attachPercentageUpdateListeners('marketRateInput', 'marketRateTotalPercentage');
+    attachPercentageUpdateListeners('marketInput', 'marketTotalPercentage');
 
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
@@ -355,7 +356,7 @@ document.addEventListener('click', function(e) {
 
         // Create a table to display the unit counts
         let tableHTML = '<p>Units by bedroom type:</p>';
-        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market Rate</th></tr></thead><tbody>';
+        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market</th></tr></thead><tbody>';
         
         const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
         for (let i = 0; i < bedroomTypes.length; i++) {
