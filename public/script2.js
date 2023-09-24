@@ -318,10 +318,12 @@ document.addEventListener('click', function(e) {
         // If validation passes, convert the percentages to unit counts
         const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
         const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
-        
-        // Debugging: Print out the intermediate arrays
+
+        // Debugging: Print out the intermediate arrays and global variables
         console.log('Affordable Inputs:', affordableInputs);
         console.log('Market Rate Inputs:', marketRateInputs);
+        console.log('Global Market Rate Units:', globalMarketRateUnits);
+        console.log('Global Affordable Units:', globalAffordableUnits);
 
         const affordableUnitCounts = affordableInputs.map(input => {
             const value = Number(input.value);

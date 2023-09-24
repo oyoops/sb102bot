@@ -213,7 +213,6 @@ img {
     padding: 5px 10px;
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
-
     opacity: 0;
     transition: opacity 2.0s;
 }
@@ -231,14 +230,21 @@ img {
 }
 
 .bedroomTypeInputGroup label {
-    flex-basis: 20%;
+    flex-basis: 30%; /* Increased from 20% to 30% */
     text-align: right;
     margin-right: 1em;
 }
 
 .bedroomTypeInputGroup input {
-    flex-basis: 15%;
+    flex-basis: 8%; /* Reduced from 15% to 8% */
     margin-right: 1em;
+    text-align: right; /* To align the numbers to the right, closer to the % symbol */
+}
+
+.bedroomTypeInputGroup input::after {
+    content: '%';
+    position: absolute;
+    margin-left: 5px;
 }
 
 .bedroomTypeInputGroup span {
