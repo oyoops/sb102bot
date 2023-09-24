@@ -258,7 +258,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Create a single cohesive sentence
     const cohesiveSentenceElem = document.createElement('p');
-    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
+    cohesiveSentenceElem.textContent = `\nBased on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
 
     // Apply the 'fade-in-line' class for the fade-in effect
     cohesiveSentenceElem.className = 'fade-in-line';
@@ -300,7 +300,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market', globalMarketRateUnits);
 
-    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML = `<p><br>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
 
     // Attach event listeners to update percentage totals in real-time
