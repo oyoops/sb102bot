@@ -223,3 +223,17 @@ img {
     font-weight: 300;
     color: #666;
 }
+
+.bedroomTypeInputGroup {
+    margin-top: 20px;
+}
+
+.bedroomTypeInputGroup label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.bedroomTypeInputGroup input {
+    width: 60px;
+    margin-right: 10px;
+}

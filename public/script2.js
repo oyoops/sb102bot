@@ -1,5 +1,10 @@
 const mainHeader = document.getElementById('mainHeader');
+let minAffordablePercent = 0.4;
 let globalDensity = null; // global variable to store the density value for later use in the unit calculations
+let globalTotalUnits = null; // global variable to store the total unit count for later use in the unit calculations
+let globalAffordableUnits = null; // global variable to store the affordable unit count for later use in the unit calculations
+let globalMarketRateUnits = null; // global variable to store the market rate unit count for later use in the unit calculations
+
 
 async function reverseGeocode(lat, lng) {
     const API_KEY = 'AIzaSyDJlvljO' + '-' + 'CVH5ax4paudEnj9RoERL6Xhbc';
@@ -162,6 +167,14 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // 
 
+
+
+
+
+
+
+
+        
     } catch (error) {
         console.log("Error while sending/receiving data: ", error);
         resultDiv.innerHTML = "<u>Sorry, an error occurred.</u><br>Try again later. <br><br><h2>:'-(</h2>";
@@ -207,8 +220,13 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     }
 
     const totalUnits = Math.floor(acreage * globalDensity); // Use the globalDensity variable
-    const affordableUnits = Math.ceil(totalUnits * 0.4);
+    const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
     const marketRateUnits = totalUnits - affordableUnits;
+
+    // Store the total/affordable/market unit counts in a global variable for later use
+    globalTotalUnits = totalUnits; // Store the total units in a global variable for later use  
+    globalAffordableUnits = affordableUnits; // Store the affordable units in a global variable for later use
+    globalMarketRateUnits = marketRateUnits; // Store the market rate units in a global variable for later use
 
     // Clear previous results if any
     const resultDiv = document.getElementById('unitCalculationResult');
@@ -228,4 +246,63 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     setTimeout(() => {
         cohesiveSentenceElem.style.opacity = '1';
     }, 500);
+
+    // ---
+    
+    // Clear previous bedroom type inputs if any
+    const bedroomTypeInputDiv = document.getElementById('bedroomTypeInputDiv');
+    bedroomTypeInputDiv.innerHTML = "";
+
+    // Generate inputs for the new section
+    const generateBedroomTypeInputs = (label) => {
+        return `
+            <div class="bedroomTypeInputGroup">
+                <label>${label}</label>
+                <input type="number" placeholder="Studio (%)" class="${label.toLowerCase()}Input" data-bedroom="Studio">
+                <input type="number" placeholder="1BD (%)" class="${label.toLowerCase()}Input" data-bedroom="1BD">
+                <input type="number" placeholder="2BD (%)" class="${label.toLowerCase()}Input" data-bedroom="2BD">
+                <input type="number" placeholder="3BD (%)" class="${label.toLowerCase()}Input" data-bedroom="3BD">
+                <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
+            </div>
+        `;
+    };
+
+    const affordableInputGroup = generateBedroomTypeInputs('Affordable', affordableUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', marketRateUnits);
+
+    bedroomTypeInputDiv.innerHTML = `<h3>Apportion your unit mix:</h3>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Submit Bedroom Types</button>';
+    // Show the new section
+    bedroomTypeInputDiv.style.display = 'block';
+});
+
+// Add a new event listener for the "Submit Bedroom Types" button
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'submitBedroomTypes') {
+        // Validate the bedroom type inputs here
+        // ... (existing validation code)
+
+        // If validation passes, convert the percentages to unit counts
+        const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
+        const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
+        
+        const affordableUnitCounts = affordableInputs.map(input => Math.round(globalAffordableUnits * (Number(input.value) / 100)));
+        const marketRateUnitCounts = marketRateInputs.map(input => Math.round(globalMarketRateUnits * (Number(input.value) / 100)));
+
+        // Create a table to display the unit counts
+        let tableHTML = '<h3>Units by bedroom count:</h3>';
+        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market</th></tr></thead><tbody>';
+        
+        const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
+        for (let i = 0; i < bedroomTypes.length; i++) {
+            tableHTML += `<tr><td>${bedroomTypes[i]}</td><td>${affordableUnitCounts[i]}</td><td>${marketRateUnitCounts[i]}</td></tr>`;
+        }
+
+        tableHTML += '</tbody></table>';
+
+        // Append the table to the bedroomTypeInputDiv
+        const tableDiv = document.createElement('div');
+        tableDiv.innerHTML = tableHTML;
+        document.getElementById('bedroomTypeInputDiv').appendChild(tableDiv);
+    }
 });
