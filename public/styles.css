@@ -54,6 +54,9 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     transition: background-color 0.3s;
 }
 button:hover {
@@ -197,6 +200,7 @@ img {
     width: auto;  /* Adjust width */
     padding: 5px 10px;
     background-color: #4c85cf;
+    justify-content: center;
     align-items: center;
     text-align: center;
     opacity: 0;
@@ -206,14 +210,17 @@ img {
 #tryAgainButton {
     /* Remove the position, bottom, and left properties */
     font-weight: 500; 
-    background-color: #afc6ed;
+    background-color: #92b8fa;
     color: #333;
     /* Add any other styles you want when the button is not fixed */
     margin-top: 0px; /* Add some top margin */
-    width: 200px; /* Adjust width */
+    width: 400px; /* Adjust width */
     padding: 5px 10px;
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     opacity: 0;
     transition: opacity 2.0s;
 }

@@ -149,6 +149,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
+
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
         let delay = 0;
@@ -169,6 +172,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
         tryAgainButton.style.opacity = '1'; // Add this line
+
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Show the acreage input section after analysis is complete
         document.getElementById('acreageSection').style.display = 'block';
@@ -212,6 +218,7 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     // Show the initial content and the main header
     initialContent.style.display = 'block';
     mainHeader.style.display = 'block';
+    
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 });
@@ -225,8 +232,12 @@ window.addEventListener('load', () => {
         input.style.opacity = 1;
         input.style.transform = 'translateY(0)';
     }, 100);
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
 });
 
+// Scroll to the top of the page
+window.scrollTo(0, 0);
 
 // Event listener for the Calculate Units button
 document.getElementById('calculateUnitsButton').addEventListener('click', function() {
@@ -241,8 +252,10 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     globalTotalUnits = totalUnits; // Store the total units in a global variable for later use  
     const affordableUnits = Math.ceil(totalUnits * minAffordablePercent);
     globalAffordableUnits = affordableUnits; // Store the affordable units in a global variable for later use
+    console.log('Global Affordable Units:', globalAffordableUnits);
     const marketRateUnits = totalUnits - affordableUnits;
     globalMarketRateUnits = marketRateUnits; // Store the market rate units in a global variable for later use
+    console.log('Global Market Rate Units:', globalMarketRateUnits);
 
     // Clear previous results if any
     const resultDiv = document.getElementById('unitCalculationResult');
@@ -250,7 +263,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Create a single cohesive sentence
     const cohesiveSentenceElem = document.createElement('p');
-    cohesiveSentenceElem.textContent = `Based on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
+    cohesiveSentenceElem.textContent = `\nBased on the acreage, you could develop a total of ${totalUnits} units, comprising ${affordableUnits} affordable units and ${marketRateUnits} market-rate units.`;
 
     // Apply the 'fade-in-line' class for the fade-in effect
     cohesiveSentenceElem.className = 'fade-in-line';
@@ -274,23 +287,31 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
 
     // Generate inputs for the new section
     const generateBedroomTypeInputs = (label) => {
+        const inputClass = label.replace(' ', '').toLowerCase() + 'Input'; // 'affordableInput' or 'marketInput'
+        ////const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketTotalPercentage'
+        const totalPercentageId = label.replace(' ', '').toLowerCase() + 'TotalPercentage'; // 'affordableTotalPercentage' or 'marketTotalPercentage'
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
-                <input type="number" placeholder="10" class="${label.toLowerCase()}Input studio" data-bedroom="Studio">
-                <input type="number" placeholder="45" class="${label.toLowerCase()}Input oneBd" data-bedroom="1BD">
-                <input type="number" placeholder="35" class="${label.toLowerCase()}Input twoBd" data-bedroom="2BD">
-                <input type="number" placeholder="10" class="${label.toLowerCase()}Input threeBd" data-bedroom="3BD">
-                <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
+                <input type="number" placeholder="10%" class="${inputClass}" data-bedroom="Studio">
+                <input type="number" placeholder="45%" class="${inputClass}" data-bedroom="1BD">
+                <input type="number" placeholder="35%" class="${inputClass}" data-bedroom="2BD">
+                <input type="number" placeholder="10%" class="${inputClass}" data-bedroom="3BD">
+                <span>Total: <span id="${totalPercentageId}">0</span>%</span>
             </div>
         `;
-    };    
+    };
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
-    const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
+    const marketRateInputGroup = generateBedroomTypeInputs('Market', globalMarketRateUnits);
 
-    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
-    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
+    bedroomTypeInputDiv.innerHTML = `<p><br>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML += '<p><center><button id="submitBedroomTypes">Use Mix</button></center></p>'
+
+    // Attach event listeners to update percentage totals in real-time
+    attachPercentageUpdateListeners('affordableInput', 'affordableTotalPercentage');
+    attachPercentageUpdateListeners('marketInput', 'marketTotalPercentage');
+
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
     bedroomTypeInputDiv.style.opacity = '1';
@@ -317,7 +338,7 @@ document.addEventListener('click', function(e) {
 
         // If validation passes, convert the percentages to unit counts
         const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
-        const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
+        const marketRateInputs = Array.from(document.querySelectorAll('.marketInput'));
 
         // Debugging: Print out the intermediate arrays and global variables
         console.log('Affordable Inputs:', affordableInputs);
@@ -339,8 +360,8 @@ document.addEventListener('click', function(e) {
         console.log('Market Rate Unit Counts:', marketRateUnitCounts);
 
         // Create a table to display the unit counts
-        let tableHTML = '<p>Units by bedroom type:</p>';
-        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market Rate</th></tr></thead><tbody>';
+        let tableHTML = '<p><br>\nUnits by bedroom type:</p>';
+        tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market</th></tr></thead><tbody>';
         
         const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
         for (let i = 0; i < bedroomTypes.length; i++) {
@@ -362,7 +383,28 @@ document.addEventListener('click', function(e) {
         // ...
 
     }
-});\n--------------------------------------------------\n### File: public/index.html\n<!DOCTYPE html>
+});
+
+
+// Function to attach event listeners to input fields for real-time percentage updates
+function attachPercentageUpdateListeners(inputClass, totalPercentageId) {
+    const inputs = document.querySelectorAll(`.${inputClass}`);
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            let totalPercentage = 0;
+            inputs.forEach(inputField => {
+                const value = parseFloat(inputField.value);
+                if (!isNaN(value)) {
+                    totalPercentage += value;
+                }
+            });
+            document.getElementById(totalPercentageId).textContent = totalPercentage.toFixed(0);
+        });
+    });
+}
+
+// Scroll to the top of the page
+window.scrollTo(0, 0);\n--------------------------------------------------\n### File: public/index.html\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -425,24 +467,26 @@ document.addEventListener('click', function(e) {
     
     <!-- Acreage input -->
     <div id="acreageSection" style="display: none;">
-        <br><br>
-        <p>What's the acreage of the property?</p>
+        <!-- <br><br> -->
+        <h3>What's the acreage of the property?</h3>
         <input type="number" id="acreageInput" placeholder="Acreage">
         <button id="calculateUnitsButton">Find unit count</button>
+        <br>
         <div id="unitCalculationResult"></div>
+        <br>
     </div>
 
     <!-- Bedroom type inputs -->
     <div id="bedroomTypeInputDiv" style="display: none;"></div>
-
+    <br>
     <!-- Unit count result (???) -->
     <div id="unitCountResult" style="display: none;"></div>
-
-
+    <br>
     <!-- Run scripts -->
     <script src="script2.js"></script>
     <!-- <script src="addressAnalysis.js"></script> -->
     <!-- <script src="additionalContent.js"></script> -->
+    <br>
 </body>
 </html>\n--------------------------------------------------\n### File: api/analyze_address.py\nfrom main import *
 from constants import *
