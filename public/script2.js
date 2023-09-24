@@ -167,8 +167,8 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Show the acreage input section after analysis is complete
         document.getElementById('acreageSection').style.display = 'block';
 
-        // Scroll to the top of the page
-        window.scrollTo(0, 0); // ???
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
 
         // ...
         // ...
@@ -247,6 +247,9 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         cohesiveSentenceElem.style.opacity = '1';
     }, 500);
 
+    // Scroll to the bottom of the page
+    window.scrollTo(0, document.body.scrollHeight);
+
     // ---
     
     // Clear previous bedroom type inputs if any
@@ -275,6 +278,9 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
 });
+
+// Scroll to the bottom of the page
+window.scrollTo(0, document.body.scrollHeight);
 
 // Add a new event listener for the "Submit Bedroom Types" button
 document.addEventListener('click', function(e) {
