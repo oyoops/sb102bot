@@ -218,6 +218,7 @@ document.getElementById('tryAgainButton').addEventListener('click', function() {
     // Show the initial content and the main header
     initialContent.style.display = 'block';
     mainHeader.style.display = 'block';
+    
     // Scroll to the top of the page
     window.scrollTo(0, 0);
 });
@@ -231,8 +232,12 @@ window.addEventListener('load', () => {
         input.style.opacity = 1;
         input.style.transform = 'translateY(0)';
     }, 100);
+    // Scroll to the top of the page
+    window.scrollTo(0, 0);
 });
 
+// Scroll to the top of the page
+window.scrollTo(0, 0);
 
 // Event listener for the Calculate Units button
 document.getElementById('calculateUnitsButton').addEventListener('click', function() {
@@ -398,3 +403,5 @@ function attachPercentageUpdateListeners(inputClass, totalPercentageId) {
     });
 }
 
+// Scroll to the top of the page
+window.scrollTo(0, 0);
