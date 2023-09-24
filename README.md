@@ -1,48 +1,54 @@
-(Written by ChatGPT)
+# SB102Bot :house_with_garden: :construction_worker:
 
-Live Local Calculator 🏠
-Description
-Welcome to the Live Local Calculator, the web app you never knew you needed but won't be able to live without. This app is like the Swiss Army knife for real estate developers and armchair urban planners. We answer the question, "What does the Live Local Act let you do?" in just 30 seconds. Don't believe me? Try it!
+> "Making South Florida's real estate development as easy as 1-2-3, or well, as SB102Bot!"
 
-Disclaimer: This is a passion project. I don't really care if you use it, but if you don't, you're missing out. 🤷‍♂️
+## Introduction
+SB102Bot is a Flask-based web application designed for real estate developers in South Florida. It allows you to enter an address and magically reveals the maximum allowable development intensity for multifamily construction at that address. Yup, it's like having your own underwriting assistant who never sleeps.
 
-Features
-Address Analysis: Yes, give me any address, and I'll tell you its potential for multifamily development. No, I won't stalk your ex.
-Reverse Geocoding: Powered by Google Maps. No, we're not stalking you; we just want to help you find the best places to build apartments.
-Density Calculation: We use top-secret, state-of-the-art, highly complicated algorithms (basic math) to calculate the maximum allowable development intensity.
-Walkability Score: Because nobody wants to live where you can't walk to get a cup of coffee.
-Google Street View & Maps: I spy with my little eye... your future property!
-Tech Stack
-Frontend: HTML, CSS, JavaScript
-Backend: Python, Flask
-Database: PostgreSQL
-Deployment: Vercel
-Others: Google Maps API
-How to Use
-Open the app.
-Type an address.
-Press "Underwrite."
-Wait 30 seconds (go grab a coffee or something).
-Gasp in awe at the detailed report generated just for you.
-Repeat.
-Code Structure
-public/script2.js: Where the magic happens. Handles user input, geocoding, and constructing divine HTML elements.
-public/index.html: The canvas where JavaScript's art is displayed. Also includes some dazzling CSS.
-api/analyze_address.py: Flask back-end that takes an address and churns out priceless information.
-Installation
-You're still reading this? Fine, you deserve a reward. This app is so good; it installs itself. Okay, not really, but it's simple:
+## Features :sparkles:
 
-Clone the repo
-Run pip install -r requirements.txt
-Run flask run
-Contributions
-I made this. You can look at it, admire it, even criticize it. But if you want to contribute, please create a fork and submit a pull request. If it's good, I might just merge it.
+- **Address Input**: Just type in the address, and hit "Underwrite". It's that simple.
+- **Geocoding & Reverse Geocoding**: We find out where on Earth your property is.
+- **Density Analysis**: The maximum allowable residential density for that location. Get those units!
+- **Walk Score**: Because nobody wants to live where you can't walk to a café.
+- **Maps & Street View**: See the property from space! Or at least from Google's satellites and cars.
+- **Intuitive UI**: We've put in hours of work to make it look like we didn't put in any work at all.
+  
+## How it Works :gear:
 
-Easter Eggs 🐣
-Yes, the CORS headers are intentional. We're not just allowing everyone; we're inviting everyone!
-Check the console logs; you might find some snarky comments.
-You can try to break it. Good luck.
-Author
-Created by @oyoops | CRE☀️
-License
-MIT. Basically, you can do whatever you want. Just don't say you made it.
+1. The frontend uses Vanilla JS to capture your address.
+2. The backend is a Flask app deployed on Vercel.
+3. We use Google Maps API for geocoding and fetching those sweet, sweet map images.
+4. Our Python backend does all the heavy lifting, fetching density data and walk scores.
+5. The results are displayed in a neat HTML report. Right in your browser. Instantly.
+
+## Code Structure :file_folder:
+
+- **public/script2.js**: The JavaScript magic wand. Handles UI changes and API calls.
+- **public/index.html**: Where HTML elements come to life.
+- **api/analyze_address.py**: The Flask endpoint that ties everything together.
+
+## Setup :wrench:
+
+To get this project running locally:
+
+1. Clone the repository.
+2. Obtain API keys for Google Maps and insert them in `script2.js` and `analyze_address.py`.
+3. Run `flask run` in the root directory.
+
+## Humor Segment :clown_face:
+
+> Why did the developer go broke?
+> 
+> Because he kept using `window.alert()` and it kept blocking his income!
+
+## Credits :clap:
+
+- Developer: [Oyoops](https://twitter.com/oyoops)
+- Inspiration: The confusing yet fascinating world of South Florida real estate.
+
+## Last Words :memo:
+
+If you find a bug, don't keep it; let us know! If you don't find a bug, well, you're not looking hard enough.
+
+_Last Updated: Sept. 21, 2023_
