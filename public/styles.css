@@ -156,7 +156,7 @@ img {
 }
 
 .loading::after {
-    content: '...';
+    content: ' ...';
     animation: spin 1s infinite;
 }
 
@@ -197,6 +197,9 @@ img {
     width: auto;  /* Adjust width */
     padding: 5px 10px;
     background-color: #9467a0;
+
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
 #tryAgainButton {
@@ -208,6 +211,9 @@ img {
     margin-top: 0px; /* Add some top margin */
     border-radius: 4px; /* Rounded corners */
     display: inline-block; /* Make it inline */
+
+    opacity: 0;
+    transition: opacity 2.0s;
 }
 
 .unitCalculationText {

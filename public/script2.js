@@ -159,6 +159,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
             }, delay);
             delay += delayPerLine;
         });
+        
         // Hide loading indicator
         loadingDiv.style.display = 'none';
         // Show "Try Again" button
@@ -319,7 +320,7 @@ document.addEventListener('click', function(e) {
         console.log('Market Rate Unit Counts:', marketRateUnitCounts);
 
         // Create a table to display the unit counts
-        let tableHTML = '<h3>Units by bedroom count:</h3>';
+        let tableHTML = '<p>Units by bedroom type:</p>';
         tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market Rate</th></tr></thead><tbody>';
         
         const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
