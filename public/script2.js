@@ -162,11 +162,17 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // Hide loading indicator
         loadingDiv.style.display = 'none';
+        console.log("Loading Indicator Display: ", window.getComputedStyle(tryAgainButton).display);
+
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
+        tryAgainButton.style.opacity = '1'; // Add this line
+        console.log("Try Again Button Display: ", window.getComputedStyle(tryAgainButton).display);
 
         // Show the acreage input section after analysis is complete
         document.getElementById('acreageSection').style.display = 'block';
+        console.log("Acreage Section Display: ", window.getComputedStyle(acreageSection).display);
+
 
         // Scroll to the bottom of the page
         window.scrollTo(0, document.body.scrollHeight);
