@@ -24,6 +24,8 @@ h1 {
 p {
     color: #666;
     font-weight: 300;
+    transform: translateY(-20px); /* Move it up by 20px */
+    transition: opacity 1s, transform 1s; /* Transition for the fade-in effect */
 }
 form {
     background: #fff;
@@ -71,11 +73,11 @@ button:hover {
     z-index: 1000;
 }
 #menuBar a:first-child {
-    margin-right: 20px;
+    margin-left: 20px;
     cursor: pointer;
 }
 #menuBar a:last-child {
-    margin-left: 20px;
+    margin-right: 20px;
     cursor: pointer;
 }
 #sunIcon {
@@ -111,7 +113,11 @@ footer a {
     color: #044b98;
     text-decoration: none;
 }
-
+/* Hide the footer if it's empty */
+footer:empty {
+    display: none;
+}
+/*  Make the footer links look like links */
 footer a:hover {
     text-decoration: underline;
 }
@@ -203,14 +209,14 @@ img {
     padding: 10px 20px;
 }
 
+
+/* Specific style for the "Try Again" button */
 #tryAgainButton {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    transform: none;
-    background-color: #afc6ed;
-    color: #333;
-    z-index: auto;
+    width: auto; /* Resets the width */
+    padding: 10px 20px; /* Adjust padding */
+    margin-top: 20px; /* Add some top margin */
+    border-radius: 4px; /* Rounded corners */
+    display: inline-block; /* Make it inline */
 }
 
 .unitCalculationText {
