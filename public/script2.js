@@ -393,7 +393,7 @@ function attachPercentageUpdateListeners(inputClass, totalPercentageId) {
                     totalPercentage += value;
                 }
             });
-            document.getElementById(totalPercentageId).textContent = totalPercentage.toFixed(2);
+            document.getElementById(totalPercentageId).textContent = totalPercentage.toFixed(0);
         });
     });
 }
