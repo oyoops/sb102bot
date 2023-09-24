@@ -299,12 +299,13 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', globalAffordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', globalMarketRateUnits);
 
+    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
+    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
+
     // Attach event listeners to update percentage totals in real-time
     attachPercentageUpdateListeners('affordableInput', 'affordableTotalPercentage');
     attachPercentageUpdateListeners('marketRateInput', 'marketRateTotalPercentage');
 
-    bedroomTypeInputDiv.innerHTML = `<p>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
-    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
     bedroomTypeInputDiv.style.opacity = '1';
