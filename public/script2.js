@@ -288,10 +288,10 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
-                <input type="number" placeholder="10" class="${inputClass}" data-bedroom="Studio">
-                <input type="number" placeholder="45" class="${inputClass}" data-bedroom="1BD">
-                <input type="number" placeholder="35" class="${inputClass}" data-bedroom="2BD">
-                <input type="number" placeholder="10" class="${inputClass}" data-bedroom="3BD">
+                <input type="number" placeholder="10%" class="${inputClass}" data-bedroom="Studio">
+                <input type="number" placeholder="45%" class="${inputClass}" data-bedroom="1BD">
+                <input type="number" placeholder="35%" class="${inputClass}" data-bedroom="2BD">
+                <input type="number" placeholder="10%" class="${inputClass}" data-bedroom="3BD">
                 <span>Total: <span id="${totalPercentageId}">0</span>%</span>
             </div>
         `;
@@ -301,7 +301,7 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     const marketRateInputGroup = generateBedroomTypeInputs('Market', globalMarketRateUnits);
 
     bedroomTypeInputDiv.innerHTML = `<p><br>Apportion the unit mix by percentage:</p>${affordableInputGroup}${marketRateInputGroup}`;
-    bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Use this mix</button>';
+    bedroomTypeInputDiv.innerHTML += '<p><center><button id="submitBedroomTypes">Use Mix</button></center></p>'
 
     // Attach event listeners to update percentage totals in real-time
     attachPercentageUpdateListeners('affordableInput', 'affordableTotalPercentage');
@@ -355,7 +355,7 @@ document.addEventListener('click', function(e) {
         console.log('Market Rate Unit Counts:', marketRateUnitCounts);
 
         // Create a table to display the unit counts
-        let tableHTML = '<p>Units by bedroom type:</p>';
+        let tableHTML = '<p><br>\nUnits by bedroom type:</p>';
         tableHTML += '<table><thead><tr><th>Beds</th><th>Affordable</th><th>Market</th></tr></thead><tbody>';
         
         const bedroomTypes = ['Studio', '1BD', '2BD', '3BD'];
