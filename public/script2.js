@@ -114,7 +114,7 @@ document.getElementById('searchForm').addEventListener('submit', async function 
 
         // STREET VIEW & GOOGLE MAPS LINK:
         let resultContent = `
-            <div class="fade-in-line"><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
+            <div class="fade-in-line"><br><u><b><h3>${inputAddressConstructed}</h3></b></u></div>
 
             <div class="imageContainer">
                 <div class="imageItem">
