@@ -261,14 +261,14 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
         return `
             <div class="bedroomTypeInputGroup">
                 <label>${label}</label>
-                <input type="number" placeholder="Studio (%)" class="${label.toLowerCase()}Input" data-bedroom="Studio">
-                <input type="number" placeholder="1BD (%)" class="${label.toLowerCase()}Input" data-bedroom="1BD">
-                <input type="number" placeholder="2BD (%)" class="${label.toLowerCase()}Input" data-bedroom="2BD">
-                <input type="number" placeholder="3BD (%)" class="${label.toLowerCase()}Input" data-bedroom="3BD">
+                <input type="number" placeholder="10" class="${label.toLowerCase()}Input studio" data-bedroom="Studio">
+                <input type="number" placeholder="45" class="${label.toLowerCase()}Input oneBd" data-bedroom="1BD">
+                <input type="number" placeholder="35" class="${label.toLowerCase()}Input twoBd" data-bedroom="2BD">
+                <input type="number" placeholder="10" class="${label.toLowerCase()}Input threeBd" data-bedroom="3BD">
                 <span>Total: <span id="${label.toLowerCase()}TotalPercentage">0</span>%</span>
             </div>
         `;
-    };
+    };    
 
     const affordableInputGroup = generateBedroomTypeInputs('Affordable', affordableUnits);
     const marketRateInputGroup = generateBedroomTypeInputs('Market Rate', marketRateUnits);
@@ -277,6 +277,14 @@ document.getElementById('calculateUnitsButton').addEventListener('click', functi
     bedroomTypeInputDiv.innerHTML += '<button id="submitBedroomTypes">Submit Bedroom Types</button>';
     // Show the new section
     bedroomTypeInputDiv.style.display = 'block';
+    
+    // Scroll to the bottom of the page
+    window.scrollTo(0, document.body.scrollHeight);
+
+    // ...
+    // ...
+    // ...
+
 });
 
 // Scroll to the bottom of the page
