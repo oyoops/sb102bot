@@ -333,7 +333,7 @@ document.addEventListener('click', function(e) {
 
         // If validation passes, convert the percentages to unit counts
         const affordableInputs = Array.from(document.querySelectorAll('.affordableInput'));
-        const marketRateInputs = Array.from(document.querySelectorAll('.marketRateInput'));
+        const marketRateInputs = Array.from(document.querySelectorAll('.marketInput'));
 
         // Debugging: Print out the intermediate arrays and global variables
         console.log('Affordable Inputs:', affordableInputs);
