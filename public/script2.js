@@ -149,6 +149,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         resultDiv.innerHTML = resultContent;
         resultDiv.style.opacity = '1';
 
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
+
         // Fade the response in line-by-line
         let delayPerLine = 500 // milliseconds
         let delay = 0;
@@ -169,6 +172,9 @@ document.getElementById('searchForm').addEventListener('submit', async function 
         // Show "Try Again" button
         tryAgainButton.style.display = 'block';
         tryAgainButton.style.opacity = '1'; // Add this line
+
+        // Scroll to the bottom of the page
+        window.scrollTo(0, document.body.scrollHeight);
 
         // Show the acreage input section after analysis is complete
         document.getElementById('acreageSection').style.display = 'block';
