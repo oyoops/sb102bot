@@ -1,1 +1,68 @@
+# Custom
 .vercel
+do_county_WORKING/
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg
+*.egg-info
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+*.egg-info/
+lib/
+lib64/
+*.egg
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Backup files
+*.bak
+
+# IDEs and editors
+# PyCharm
+.idea/
+*.iml
+# Visual Studio Code
+.vscode/
+# Atom
+.atom/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Virtual environment
+venv/
+*.venv
+venv.bak/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.*.dist
+
+# Additional files/folders you might want to ignore
+# config.ini
+# secrets.yaml
