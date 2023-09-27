@@ -13,7 +13,7 @@ def get_desktop_path():
 # --- Main code starts here --- #
 
 # List of file names to combine
-file_names = ['public/script2.js', 'public/index.html',
+file_names = ['public/index.html', 'public/script2.js',
               'api/analyze_address.py']#, 'main.py',
               # 'public/styles.css',
               # 'location.py', 'building.py',
